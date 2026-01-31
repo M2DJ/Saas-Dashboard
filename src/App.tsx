@@ -1,13 +1,14 @@
-import HomePage from "./pages/HomePage"
+import { AuthContextProvider } from "./context/AuthContext";
+import HomePage from "./pages/HomePage";
 
 function App() {
-  
-
   return (
     <>
-      <HomePage />
+      <AuthContextProvider>
+        <HomePage />
+      </AuthContextProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
