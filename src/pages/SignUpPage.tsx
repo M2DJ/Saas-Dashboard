@@ -1,8 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [loading, setLoading] = useState();
+  const [error, setError] = useState();
+
   return (
-    <div className="h-[100vh] justify-between flex font-inter">
+    <div className="h-[100vh] justify-between flex font-inter overflow-hidden">
       <div className="h-[100vh] w-[111vh] flex flex-col items-center justify-center">
         <p className="text-5xl text-[#5B92FF] font-medium">Sign Up</p>
         <form className="mt-5">
