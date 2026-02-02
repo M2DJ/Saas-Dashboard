@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import "../pages/SignUpPage.css";
 
 const SignUpPage = () => {
@@ -10,10 +10,12 @@ const SignUpPage = () => {
   //Animation state
   const [isClosed, setIsClosed] = useState(false);
 
+  const navigate = useNavigate();
+
   return (
     <div className="h-[100vh] justify-between flex font-inter overflow-hidden">
       <div
-        className={`h-[100vh] w-[111vh] flex flex-col items-center justify-center animateFormOpen`}
+        className={`h-[100vh] w-[111vh] flex flex-col items-center justify-center ${isClosed ? "animateFormClose" : "animateFormOpen"}`}
       >
         <p className="text-5xl text-[#5B92FF] font-medium">Sign Up</p>
         <form className="mt-5">
@@ -49,7 +51,7 @@ const SignUpPage = () => {
         {/* Add other sign in methods here */}
       </div>
 
-      <div className="h-[100vh] w-[90vh] bg-[#5B92FF] rounded-l-[110px] animatePanelOpen">
+      <div className={`h-[100vh] w-[90vh] bg-[#5B92FF] rounded-l-[110px] ${isClosed ? "animatePanelClose" : "animatePanelOpen"}`}>
         <div className="h-[100vh] flex flex-col justify-center items-center ">
           <p className="text-white text-7xl/22 mb-10">
             CREATE AN
@@ -57,11 +59,15 @@ const SignUpPage = () => {
           </p>
 
           <p className="text-white text-xl mb-2">Already have an account?</p>
-          <Link to="/login">
-            <button className="mr-4 px-2 py-[6px] border-[2px] border-white rounded-sm shadow-xl min-w-[150px] text-xl text-white font-medium">
-              Login
-            </button>
-          </Link>
+          <button
+            className="mr-4 px-2 py-[6px] border-[2px] border-white rounded-sm shadow-xl min-w-[150px] text-xl text-white font-medium"
+            onClick={() => {
+              setTimeout(() => navigate('/login'), 500)
+              setIsClosed(true);
+            }}
+          >
+            Login
+          </button>
         </div>
       </div>
     </div>
