@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import "../pages/SignUpPage.css";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [loading, setLoading] = useState();
   const [error, setError] = useState();
+  //Animation state
+  const [isClosed, setIsClosed] = useState(false);
 
   return (
     <div className="h-[100vh] justify-between flex font-inter overflow-hidden">
-      <div className="h-[100vh] w-[111vh] flex flex-col items-center justify-center">
+      <div
+        className={`h-[100vh] w-[111vh] flex flex-col items-center justify-center animateFormOpen`}
+      >
         <p className="text-5xl text-[#5B92FF] font-medium">Sign Up</p>
         <form className="mt-5">
           <label className="text-[25px]">Email</label>
@@ -44,8 +49,8 @@ const SignUpPage = () => {
         {/* Add other sign in methods here */}
       </div>
 
-      <div className="h-[100vh] w-[90vh] bg-[#5B92FF] rounded-l-[110px]">
-        <div className="h-[100vh] flex flex-col justify-center items-center">
+      <div className="h-[100vh] w-[90vh] bg-[#5B92FF] rounded-l-[110px] animatePanelOpen">
+        <div className="h-[100vh] flex flex-col justify-center items-center ">
           <p className="text-white text-7xl/22 mb-10">
             CREATE AN
             <br /> ACCOUNT!
