@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../pages/SignUpPage.css";
+import { UserAuth } from "../context/AuthContext";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState();
@@ -9,6 +10,8 @@ const SignUpPage = () => {
   const [error, setError] = useState();
   //Animation state
   const [isClosed, setIsClosed] = useState(false);
+
+  const {signUp} = UserAuth();
 
   const navigate = useNavigate();
 
