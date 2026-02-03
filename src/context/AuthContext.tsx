@@ -2,11 +2,17 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { supabase } from "../services/Supabase";
 import type { Session } from "@supabase/supabase-js";
 
+type AuthResult = {
+  success: boolean;
+  error?: any;
+  data?: any;
+};
+
 type AuthContextType = {
   session: Session | null;
-  signUp: (email: string, password: string) => void;
-  logIn: (email: string, password: string) => void;
-  logOut: () => void;
+  signUp: (email: string, password: string) => Promise<AuthResult>;
+  logIn: (email: string, password: string) => Promise<AuthResult>;
+  logOut: () => Promise<AuthResult>;
 };
 
 type AuthContextProviderProps = {
@@ -53,6 +59,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       console.log("There was a problem logging out: ", error);
       return { success: false, error };
     }
+
+    return { success: true }
   }
 
   useEffect(() => {
