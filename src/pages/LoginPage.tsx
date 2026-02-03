@@ -4,7 +4,9 @@ import "../pages/LoginPage.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState();
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState();
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState();
   const [error, setError] = useState();
   //Animnation state

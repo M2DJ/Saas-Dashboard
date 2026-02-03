@@ -5,8 +5,11 @@ import { UserAuth } from "../context/AuthContext";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordError, setconfirmPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   //Animation state
