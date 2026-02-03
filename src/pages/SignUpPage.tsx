@@ -117,6 +117,7 @@ const SignUpPage = () => {
                 "Sign Up"
               )}
             </button>
+            {error.length > 1 && <p className="text-red-500">{error}</p>}
           </div>
         </form>
 
