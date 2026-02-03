@@ -52,6 +52,7 @@ const SignUpPage = () => {
 
       const result = await signUp(email, password);
       if (result.success) {
+      //Navigate to dashboard
       }
     } catch (e) {
       setError("An error occured");
