@@ -42,27 +42,27 @@
 .animateFormCloseLogin {
   animation-name: animateFormCloseLogin;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
 
 .animatePanelCloseLogin {
   animation-name: animatePanelCloseLogin;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
 
 .animateFormOpenLogin {
   animation-name: animateFormOpenLogin;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
 
 .animatePanelOpenLogin {
   animation-name: animatePanelOpenLogin;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }

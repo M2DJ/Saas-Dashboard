@@ -2,6 +2,7 @@ import NavBar from "../components/NavBar";
 import img1 from "../assets/images/unsplash_oXlXu2qukGE.jpg";
 import Github from "../assets/images/Github_Logo.jpg";
 import Linkedin from "../assets/images/Linkedin_Logo.jpg";
+import { Link } from "react-router-dom";
 
 function HomePage() {
   return (
@@ -20,9 +21,11 @@ function HomePage() {
             Get all your work in one place
           </p>
           <div className="mt-[20px]">
-            <button className="min-w-[250px] min-h-[70px] bg-white rounded-xl text-[28px] text-[#5B92FF] font-semibold shadow-2xl">
-              Get Started
-            </button>
+            <Link to={"/signup"}>
+              <button className="min-w-[250px] min-h-[70px] bg-white rounded-xl text-[28px] text-[#5B92FF] font-semibold shadow-2xl">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
 

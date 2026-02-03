@@ -41,27 +41,27 @@
 .animateFormClose {
   animation-name: animateFormClose;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
 
 .animatePanelClose {
   animation-name: animatePanelClose;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
 
 .animateFormOpen {
   animation-name: animateFormOpen;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
 
 .animatePanelOpen {
   animation-name: animatePanelOpen;
   animation-duration: 500ms;
-  animation-timing-function: ease-in;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
