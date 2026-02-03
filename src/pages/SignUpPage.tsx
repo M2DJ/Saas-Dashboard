@@ -15,29 +15,40 @@ const SignUpPage = () => {
   //Animation state
   const [isClosed, setIsClosed] = useState(false);
 
-  const { signUp } = UserAuth();
+  const { session, signUp } = UserAuth();
+  console.log(session);
 
   const navigate = useNavigate();
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    let hasError = false;
+
+    if (!email.includes("@")) {
+      setEmailError("Invalid Email");
+      hasError = true;
+    }
+
+    if (password.length < 6) {
+      setPasswordError("Password must be atleast 6 characters long");
+      hasError = true
+    }
+
+    if (password.includes(" ")) {
+      setPasswordError("Password can only have these characters: -,_,/");
+      hasError = true
+    }
+
+    if (confirmPassword != password) {
+      setconfirmPasswordError("Password does not match");
+      hasError = true
+    }
+
+    if(hasError) return
+    
     try {
       setLoading(true);
-      if (!email.includes("@")) {
-        setEmailError("Invalid Email");
-      }
-
-      if (password.length < 6) {
-        setPasswordError("Password must be atleast 6 characters long");
-      }
-
-      if (password.includes(" ")) {
-        setPasswordError("Password can only have these characters: -,_,/");
-      }
-
-      if (confirmPassword != password) {
-        setconfirmPasswordError("Password does not match");
-      }
 
       const result = await signUp(email, password);
       if (result.success) {
