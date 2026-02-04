@@ -109,9 +109,6 @@ const LoginPage = () => {
             <p className="text-red-500">{passwordError}</p>
           )}
           <br />
-          <button type="button" className="text-[#565656] mb-4">
-            Forgot password?
-          </button>
           <div className="flex justify-center">
             <button
               type="submit"
