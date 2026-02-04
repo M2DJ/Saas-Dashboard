@@ -6,7 +6,7 @@ import Assignment_Unselected from "../assets/images/Assignment_Unselected.svg";
 function DashboardPage() {
   return (
     <div className="flex h-screen font-inter">
-      <div className="bg-[#5B92FF] min-w-30 flex flex-col items-center py-4">
+      <div className="bg-[#5B92FF] min-w-26 flex flex-col items-center py-4">
         <div className="h-15">
           <svg
             className="fill-current text-white"
@@ -25,13 +25,17 @@ function DashboardPage() {
         </div>
         <div className="h-screen flex flex-col items-center justify-evenly">
           <div>
-            <img src={Class_Selected} className="h-15" />
-            <p className="text-center text-white mt-1">Classes</p>
+            <button>
+              <img src={Class_Selected} className="h-15" />
+              <p className="text-center text-white mt-1">Classes</p>
+            </button>
           </div>
           <div className=" h-[0.5px] w-25 bg-white"></div>
           <div className="flex flex-col items-center">
-            <img src={Assignment_Unselected} className="h-15" />
-            <p className="text-center text-white mt-1">Assignments</p>
+            <button>
+              <img src={Assignment_Unselected} className="h-15" />
+              <p className="text-center text-white mt-1">Assignments</p>
+            </button>
           </div>
         </div>
       </div>
