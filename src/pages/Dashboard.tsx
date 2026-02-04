@@ -31,8 +31,8 @@ function DashboardPage() {
             </button>
           </div>
           <div className=" h-[0.5px] w-25 bg-white"></div>
-          <div className="flex flex-col items-center">
-            <button>
+          <div className="">
+            <button className="flex flex-col items-center">
               <img src={Assignment_Unselected} className="h-15" />
               <p className="text-center text-white mt-1">Assignments</p>
             </button>
