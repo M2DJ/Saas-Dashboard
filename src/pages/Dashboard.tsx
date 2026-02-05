@@ -62,7 +62,7 @@ function DashboardPage() {
           </div>
         </div>
       </div>
-      <div className="flex-1 p-3">
+      <div className="flex-1">
         {pageSwitcher === "classes" ? <ClassesPage /> : <AssignmentsPage />}
       </div>
     </div>
