@@ -2,11 +2,12 @@ import Class_Selected from "../assets/images/Class_Selected.svg";
 import Class_Unselected from "../assets/images/Class_Unselected.svg";
 import Assignment_Selected from "../assets/images/Assignment_Selected.svg";
 import Assignment_Unselected from "../assets/images/Assignment_Unselected.svg";
-import { use, useState } from "react";
+import { useState } from "react";
 
 function DashboardPage() {
   const [selected, setSelected] = useState(true);
   const [unSelected, setUnSelected] = useState(false);
+  const [pageSwitcher, setPageSwitcher] = useState("classes");
 
   return (
     <div className="flex h-screen font-inter">
@@ -60,7 +61,9 @@ function DashboardPage() {
           </div>
         </div>
       </div>
-      <div className="grow-1"></div>
+      <div className="grow-1">
+        
+      </div>
     </div>
   );
 }
