@@ -3,10 +3,11 @@ import Class_Unselected from "../assets/images/Class_Unselected.svg";
 import Assignment_Selected from "../assets/images/Assignment_Selected.svg";
 import Assignment_Unselected from "../assets/images/Assignment_Unselected.svg";
 import { useState } from "react";
+import ClassesPage from "./ClassesPage";
+import AssignmentsPage from "./AssignmentsPage";
 
 function DashboardPage() {
-  const [selected, setSelected] = useState(true);
-  const [unSelected, setUnSelected] = useState(false);
+  const [selectedPage, setSelectedPage] = useState("classes");
   const [pageSwitcher, setPageSwitcher] = useState("classes");
 
   return (
@@ -32,28 +33,28 @@ function DashboardPage() {
           <div>
             <button
               onClick={() => {
-                setSelected((prev) => !prev);
-                setUnSelected((prev) => !prev);
+                setSelectedPage("classes");
+                setPageSwitcher("classes");
               }}
             >
               <img
-                src={selected ? Class_Selected : Class_Unselected}
+                src={selectedPage === "classes" ? Class_Selected : Class_Unselected}
                 className="h-15"
               />
               <p className="text-center text-white mt-1">Classes</p>
             </button>
           </div>
-          <div className=" h-[0.5px] w-25 bg-white"></div>
+          <div className=" h-[0.1px] w-21 bg-white"></div>
           <div className="">
             <button
               className="flex flex-col items-center"
               onClick={() => {
-                setSelected((prev) => !prev);
-                setUnSelected((prev) => !prev);
+                setSelectedPage("assignments");
+                setPageSwitcher("");
               }}
             >
               <img
-                src={unSelected ? Assignment_Selected : Assignment_Unselected}
+                src={selectedPage === "assignments" ? Assignment_Selected : Assignment_Unselected}
                 className="h-15"
               />
               <p className="text-center text-white mt-1">Assignments</p>
@@ -61,8 +62,8 @@ function DashboardPage() {
           </div>
         </div>
       </div>
-      <div className="grow-1">
-        
+      <div className="flex-1 p-3">
+        {pageSwitcher === "classes" ? <ClassesPage /> : <AssignmentsPage />}
       </div>
     </div>
   );
