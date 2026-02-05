@@ -2,8 +2,12 @@ import Class_Selected from "../assets/images/Class_Selected.svg";
 import Class_Unselected from "../assets/images/Class_Unselected.svg";
 import Assignment_Selected from "../assets/images/Assignment_Selected.svg";
 import Assignment_Unselected from "../assets/images/Assignment_Unselected.svg";
+import { use, useState } from "react";
 
 function DashboardPage() {
+  const [selected, setSelected] = useState(true);
+  const [unSelected, setUnSelected] = useState(false);
+
   return (
     <div className="flex h-screen font-inter">
       <div className="bg-[#5B92FF] min-w-26 flex flex-col items-center py-4">
@@ -25,15 +29,32 @@ function DashboardPage() {
         </div>
         <div className="h-screen flex flex-col items-center justify-evenly">
           <div>
-            <button>
-              <img src={Class_Selected} className="h-15" />
+            <button
+              onClick={() => {
+                setSelected((prev) => !prev);
+                setUnSelected((prev) => !prev);
+              }}
+            >
+              <img
+                src={selected ? Class_Selected : Class_Unselected}
+                className="h-15"
+              />
               <p className="text-center text-white mt-1">Classes</p>
             </button>
           </div>
           <div className=" h-[0.5px] w-25 bg-white"></div>
           <div className="">
-            <button className="flex flex-col items-center">
-              <img src={Assignment_Unselected} className="h-15" />
+            <button
+              className="flex flex-col items-center"
+              onClick={() => {
+                setSelected((prev) => !prev);
+                setUnSelected((prev) => !prev);
+              }}
+            >
+              <img
+                src={unSelected ? Assignment_Selected : Assignment_Unselected}
+                className="h-15"
+              />
               <p className="text-center text-white mt-1">Assignments</p>
             </button>
           </div>
