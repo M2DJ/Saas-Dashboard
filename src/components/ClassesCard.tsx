@@ -4,14 +4,12 @@ import Spacing_Dot from "../assets/images/Spacing_Dot.svg";
 type ClassesCardProps = {
   className: string;
   numOfFiles: number;
-  numOfFolders: number;
   numOfAssignments: number;
 };
 
 const ClassesCard = ({
   className,
   numOfFiles,
-  numOfFolders,
   numOfAssignments,
 }: ClassesCardProps) => {
 
@@ -23,7 +21,7 @@ const ClassesCard = ({
   };
 
   return (
-    <div className="font-inter h-[180px] w-[420px] p-2 rounded-xl relative shadow-[0px_0px_8px_rgba(0,0,0,0.3)]">
+    <div className="font-inter h-[180px] w-[370px] p-2 rounded-xl relative shadow-[0px_0px_8px_rgba(0,0,0,0.3)]">
       <div className="flex justify-between items-start">
           <div className="h-22 w-22 bg-[#707070] rounded-xl flex justify-center items-center mb-5">
             <p className="text-5xl text-white">{clipClassName(className)}</p>
@@ -36,8 +34,6 @@ const ClassesCard = ({
       <div className="text-[#7D7D7D] flex gap-2">
         <p>{numOfFiles} Files</p>
         <img src={Spacing_Dot} className="mt-1" />
-        <p>{numOfFolders} Folders</p>
-        <img src={Spacing_Dot} className="mt-1"/>
         <p>{numOfAssignments} Assignment(s)</p>
       </div>
     </div>

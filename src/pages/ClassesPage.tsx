@@ -5,7 +5,6 @@ const ClassesPage = () => {
     {
       className: "Python",
       numOfFiles: 12,
-      numOfFolders: 2,
       numOfAssignments: 1,
     },
   ];
@@ -27,7 +26,6 @@ const ClassesPage = () => {
           <ClassesCard
             className={classItem.className}
             numOfFiles={classItem.numOfFiles}
-            numOfFolders={classItem.numOfFolders}
             numOfAssignments={classItem.numOfAssignments}
           />
         ))}

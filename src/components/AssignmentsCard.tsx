@@ -21,7 +21,7 @@ const AssignmentsCard = ({ className, dueDate }: AssignmentCardProps) => {
       <div>
         <p className="text-xl mb-3">{className}</p>
         <p className="text-[#7D7D7D]">
-          Due
+          Due{" "}
           <span className="italic">{format(dueDate, "MMM do, h:mm a")}</span>
         </p>
       </div>
