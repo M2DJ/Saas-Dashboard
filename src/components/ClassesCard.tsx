@@ -3,13 +3,13 @@ import Spacing_Dot from "../assets/images/Spacing_Dot.svg";
 
 type ClassesCardProps = {
   className: string;
-  numOfFiles: number;
+  numOfLectures: number;
   numOfAssignments: number;
 };
 
 const ClassesCard = ({
   className,
-  numOfFiles,
+  numOfLectures,
   numOfAssignments,
 }: ClassesCardProps) => {
 
@@ -32,7 +32,7 @@ const ClassesCard = ({
       </div>
       <p className="text-2xl">{className}</p>
       <div className="text-[#7D7D7D] flex gap-2">
-        <p>{numOfFiles} Files</p>
+        <p>{numOfLectures} Lecture(s)</p>
         <img src={Spacing_Dot} className="mt-1" />
         <p>{numOfAssignments} Assignment(s)</p>
       </div>
