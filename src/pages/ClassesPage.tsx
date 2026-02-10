@@ -1,12 +1,14 @@
 import { useState } from "react";
 import ClassesCard from "../components/ClassesCard";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
+import ClassContent from "./ClassContent";
 
 const ClassesPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [createAClass, setCreateAClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState(false);
 
   const handleCloseAnimationPopUp = () => {
     setIsClosing(true);
@@ -26,12 +28,29 @@ const ClassesPage = () => {
 
   const classes = [
     {
-      className: "Python",
+      nameOfClass: "Python",
       numOfLectures: 12,
       numOfAssignments: 1,
     },
   ];
 
+  const lectures = [
+    {
+      fileName: "First Lecture",
+      uploadDate: new Date(),
+      fileSize: 2.4
+    },
+    {
+      fileName: "Second Lecture",
+      uploadDate: new Date(),
+      fileSize: 2.4
+    },
+    {
+      fileName: "Third Lecture",
+      uploadDate: new Date(),
+      fileSize: 2.4
+    },
+  ]
   return (
     <>
       {openDialog && (
@@ -39,13 +58,15 @@ const ClassesPage = () => {
           <div
             onClick={handleCloseAnimationPopUp}
             className={`fixed inset-0 bg-black z-40 transition-opacity duration-300 ${
-              isOpening || isClosing ? 'opacity-0' : 'opacity-50'
+              isOpening || isClosing ? "opacity-0" : "opacity-50"
             }`}
           ></div>
 
           <div
             className={`w-110 h-60 rounded-lg bg-white shadow-[0px_0px_8px_rgba(0,0,0,0.3)] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 transition-all duration-300 ${
-              isOpening || isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+              isOpening || isClosing
+                ? "opacity-0 scale-95"
+                : "opacity-100 scale-100"
             }`}
           >
             {createAClass === "" ? (
@@ -113,30 +134,38 @@ const ClassesPage = () => {
         </>
       )}
 
-      <div className="font-inter">
-        <div className="h-20 py-3 px-6">
-          <div className="w-full flex justify-between items-center mb-2">
-            <p className="text-4xl ">Classes</p>
-            <button
-              onClick={handleOpenAnimationPopUp}
-              className="px-2 py-1 bg-[#5B92FF] text-white text-lg rounded shadow-lg"
-            >
-              Join or Create a Class
-            </button>
+      {selectedClass ? (
+        <ClassContent
+          onClick={() => setSelectedClass(false)}
+          nameOfClass={classes[0].nameOfClass}
+          lectures={lectures}
+        />
+      ) : (
+        <div onClick={() => setSelectedClass(true)} className="font-inter">
+          <div className="min-h-20 py-3 px-6">
+            <div className="w-full flex justify-between items-center mb-2">
+              <p className="text-4xl ">Classes</p>
+              <button
+                onClick={handleOpenAnimationPopUp}
+                className="px-2 py-1 bg-[#5B92FF] text-white text-lg rounded shadow-lg"
+              >
+                Join or Create a Class
+              </button>
+            </div>
+            <div className="h-[0.1px] bg-[#B2A9A9]"></div>
           </div>
-          <div className="h-[0.1px] bg-[#B2A9A9]"></div>
-        </div>
 
-        <div className="px-6">
-          {classes.map((classItem) => (
-            <ClassesCard
-              className={classItem.className}
-              numOfLectures={classItem.numOfLectures}
-              numOfAssignments={classItem.numOfAssignments}
-            />
-          ))}
+          <div className="px-6">
+            {classes.map((classItem) => (
+              <ClassesCard
+                className={classItem.nameOfClass}
+                numOfLectures={classItem.numOfLectures}
+                numOfAssignments={classItem.numOfAssignments}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
