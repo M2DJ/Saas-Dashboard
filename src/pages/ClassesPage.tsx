@@ -141,7 +141,7 @@ const ClassesPage = () => {
           lectures={lectures}
         />
       ) : (
-        <div onClick={() => setSelectedClass(true)} className="font-inter">
+        <div className="font-inter">
           <div className="min-h-20 py-3 px-6">
             <div className="w-full flex justify-between items-center mb-2">
               <p className="text-4xl ">Classes</p>
@@ -155,7 +155,7 @@ const ClassesPage = () => {
             <div className="h-[0.1px] bg-[#B2A9A9]"></div>
           </div>
 
-          <div className="px-6">
+          <div onClick={() => setSelectedClass(true)} className="px-6">
             {classes.map((classItem) => (
               <ClassesCard
                 className={classItem.nameOfClass}
