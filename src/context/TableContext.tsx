@@ -17,7 +17,8 @@ type TableContextType = {
 const TableContext = createContext<TableContextType | undefined>(undefined);
 
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
-  const { session } = UserAuth();
+  
+    const { session } = UserAuth();
 
   const addClass = async (
     nameOfClass: string,
