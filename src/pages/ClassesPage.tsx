@@ -3,6 +3,13 @@ import ClassesCard from "../components/ClassesCard";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import ClassContent from "./ClassContent";
 
+export type ClassesType = {
+  class_id: string;
+  class_name: string;
+  class_creator: string;
+  created_at: string;
+}
+
 const ClassesPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
