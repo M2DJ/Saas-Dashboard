@@ -16,9 +16,7 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  const { session, logIn } = UserAuth();
-
-  console.log(session);
+  const { logIn } = UserAuth();
 
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

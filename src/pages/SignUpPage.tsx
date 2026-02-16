@@ -15,8 +15,7 @@ const SignUpPage = () => {
   //Animation state
   const [isClosed, setIsClosed] = useState(false);
 
-  const { session, signUp } = UserAuth();
-  console.log(session);
+  const { signUp } = UserAuth();
 
   const navigate = useNavigate();
 
