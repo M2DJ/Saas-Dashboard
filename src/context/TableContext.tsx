@@ -19,8 +19,6 @@ type TableContextType = {
   classes: ClassesType[];
   addClass: (nameOfClass: string) => Promise<TableResult>;
   getClasses: () => Promise<TableResult>;
-  getNumOfLectures: (classId: string) => Promise<number>;
-  getNumOfAssignments: (classId: string) => Promise<number>;
 };
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
@@ -79,7 +77,13 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
     const { data, error } = await supabase
       .from("Classes")
-      .select("*")
+      .select(
+        `
+      *,
+      lectures:ClassLectures(count),
+      assignments:ClassAssignments(count)
+    `,
+      )
       .eq("class_creator", currentSession.user.id);
 
     if (error) {
@@ -87,36 +91,14 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       return { success: false, error };
     }
 
-    setClassses(data);
+    const classesWithCounts = data.map(classItem => ({
+    ...classItem,
+    numOfLectures: classItem.lectures?.[0]?.count || 0,
+    numOfAssignments: classItem.assignments?.[0]?.count || 0
+  }));
+
+    setClassses(classesWithCounts);
     return { success: true, data };
-  };
-
-  const getNumOfLectures = async (classId: string) => {
-    const { count, error } = await supabase
-      .from("Class Lectures")
-      .select("*", { count: "exact", head: true })
-      .eq("class_id", classId);
-
-    if (error) {
-      console.log("Error getting lecture count: ", error);
-      return 0;
-    }
-
-    return count ?? 0;
-  };
-
-  const getNumOfAssignments = async (classId: string) => {
-    const { count, error } = await supabase
-      .from("Class Assignments")
-      .select("*", { count: "exact", head: true })
-      .eq("class_id", classId);
-
-    if (error) {
-      console.log("Error getting lecture count: ", error);
-      return 0;
-    }
-
-    return count ?? 0;
   };
 
   return (
@@ -125,8 +107,6 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
         classes,
         getClasses,
         addClass,
-        getNumOfLectures,
-        getNumOfAssignments,
       }}
     >
       {children}

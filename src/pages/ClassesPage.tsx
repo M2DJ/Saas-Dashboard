@@ -9,6 +9,8 @@ export type ClassesType = {
   class_name: string;
   class_creator: string;
   created_at: string;
+  numOfLectures?: number;
+  numOfAssignments?: number;
 };
 
 const ClassesPage = () => {
@@ -20,12 +22,12 @@ const ClassesPage = () => {
   const [createClassName, setCreateClassName] = useState("");
 
   //State for classes
-
   const [classError, setClassError] = useState("");
   const [classLoading, setClassLoading] = useState("");
 
   const { classes, addClass, getClasses } = tableInserterAndRemover();
 
+  //For fetching classes
   useEffect(() => {
     const getThoseClasses = async () => {
       try {
@@ -209,8 +211,8 @@ const ClassesPage = () => {
               <ClassesCard
                 key={classItem.class_id}
                 className={classItem.class_name}
-                // numOfLectures={classItem.numOfLectures}
-                // numOfAssignments={classItem.numOfAssignments}
+                numOfLectures={classItem.numOfLectures ?? 0}
+                numOfAssignments={classItem.numOfAssignments ?? 0}
               />
             ))}
           </div>
