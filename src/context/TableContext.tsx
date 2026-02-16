@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { supabase } from "../services/Supabase";
 import { UserAuth } from "./AuthContext";
 import type { ClassesType } from "../pages/ClassesPage";
@@ -10,7 +16,7 @@ type TableResult = {
 };
 
 type TableContextType = {
-    classes: ClassesType[];
+  classes: ClassesType[];
   addClass: (nameOfClass: string) => Promise<TableResult>;
   getClasses: () => Promise<TableResult>;
 };
@@ -22,17 +28,30 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
   const { session } = UserAuth();
 
+  useEffect(() => {
+    console.log("session changed");
+  }, [session]);
+
   const addClass = async (nameOfClass: string) => {
-    if (!session?.user?.id) {
+    const {
+      data: { session: currentSession },
+    } = await supabase.auth.getSession();
+
+    if (!currentSession?.user?.id) {
       return {
         success: false,
         error: "User not authenticated",
       };
     }
 
+    console.log("✅ PASSED: User is authenticated, inserting...");
+
     const { data, error } = await supabase
       .from("Classes")
-      .insert([{ class_name: nameOfClass, class_creator: session.user.id }]);
+      .insert([{ class_name: nameOfClass, class_creator: currentSession.user.id }])
+      .select();
+
+    console.log("Supabase insert result:", { data, error });
 
     if (error) {
       console.log("Error adding class: ", error);
@@ -43,7 +62,9 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getClasses = async () => {
-    if (!session?.user?.id) {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+
+    if (!currentSession?.user?.id) {
       return {
         success: false,
         error: "User not authenticated",
@@ -53,15 +74,15 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     const { data, error } = await supabase
       .from("Classes")
       .select("*")
-      .eq("class_creator", session.user.id);
-    
-    if(error) {
-        console.log("Error fetching classes: ", error);
-        return {success: false, error};
+      .eq("class_creator", currentSession.user.id);
+
+    if (error) {
+      console.log("Error fetching classes: ", error);
+      return { success: false, error };
     }
 
     setClassses(data);
-    return {success: true, data};
+    return { success: true, data };
   };
 
   return (

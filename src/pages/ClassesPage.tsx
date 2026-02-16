@@ -1,14 +1,15 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClassesCard from "../components/ClassesCard";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import ClassContent from "./ClassContent";
+import { tableInserterAndRemover } from "../context/TableContext";
 
 export type ClassesType = {
   class_id: string;
   class_name: string;
   class_creator: string;
   created_at: string;
-}
+};
 
 const ClassesPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -16,6 +17,36 @@ const ClassesPage = () => {
   const [isOpening, setIsOpening] = useState(false);
   const [createAClass, setCreateAClass] = useState("");
   const [selectedClass, setSelectedClass] = useState(false);
+  const [createClassName, setCreateClassName] = useState("");
+
+  const { classes, addClass, getClasses } = tableInserterAndRemover();
+
+  useEffect(() => {
+    const getThoseClasses = async () => {
+      try {
+        await getClasses();
+      } catch (e) {
+        console.log("An error has occured: ", e);
+      }
+    };
+
+    getThoseClasses();
+  }, []);
+
+  const submitCreateClass = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      const result = await addClass(createClassName);
+
+      if(result.success){
+        handleCloseAnimationPopUp();
+        setCreateClassName("");
+      } else {
+        console.log("Failed to create class: ", result.error);
+      }
+    } catch (e) {
+      console.log("There was an error creating the class: ", e);
+    }
+  };
 
   const handleCloseAnimationPopUp = () => {
     setIsClosing(true);
@@ -33,31 +64,23 @@ const ClassesPage = () => {
     setTimeout(() => setIsOpening(false), 50);
   };
 
-  const classes = [
-    {
-      nameOfClass: "Python",
-      numOfLectures: 12,
-      numOfAssignments: 1,
-    },
-  ];
-
   const lectures = [
     {
       fileName: "First Lecture",
       uploadDate: new Date(),
-      fileSize: 2.4
+      fileSize: 2.4,
     },
     {
       fileName: "Second Lecture",
       uploadDate: new Date(),
-      fileSize: 2.4
+      fileSize: 2.4,
     },
     {
       fileName: "Third Lecture",
       uploadDate: new Date(),
-      fileSize: 2.4
+      fileSize: 2.4,
     },
-  ]
+  ];
   return (
     <>
       {openDialog && (
@@ -101,18 +124,24 @@ const ClassesPage = () => {
                     <img src={Arrow_Back} className="w-7" />
                   </button>
 
-                  <div className="h-40 flex flex-col justify-center items-center">
-                    <div className="w-20 h-28 bg-[#BEBEBE] rounded-lg text-5xl flex justify-center items-center mb-2">
-                      #
+                  <form onSubmit={submitCreateClass}>
+                    <div className="h-40 flex flex-col justify-center items-center">
+                      <div className="w-20 h-28 bg-[#BEBEBE] rounded-lg text-5xl flex justify-center items-center mb-2">
+                        #
+                      </div>
+                      <p className="font-bold text-lg mb-2">
+                        Add class name here
+                      </p>
+                      <input
+                        type="text"
+                        className="bg-[#BEBEBE] rounded-md p-2 text-md mb-3"
+                        onChange={(e) => setCreateClassName(e.target.value)}
+                      />
+                      <button className="px-4 py-1 rounded-md bg-[#5B92FF] text-xl text-white">
+                        Create
+                      </button>
                     </div>
-                    <p className="font-bold text-lg mb-2">
-                      Add class name here
-                    </p>
-                    <input
-                      type="text"
-                      className="bg-[#BEBEBE] rounded-md p-2 text-md"
-                    />
-                  </div>
+                  </form>
                 </div>
               </>
             ) : (
@@ -144,7 +173,7 @@ const ClassesPage = () => {
       {selectedClass ? (
         <ClassContent
           onClick={() => setSelectedClass(false)}
-          nameOfClass={classes[0].nameOfClass}
+          nameOfClass={classes[0].class_name}
           lectures={lectures}
         />
       ) : (
@@ -165,9 +194,10 @@ const ClassesPage = () => {
           <div onClick={() => setSelectedClass(true)} className="px-6">
             {classes.map((classItem) => (
               <ClassesCard
-                className={classItem.nameOfClass}
-                numOfLectures={classItem.numOfLectures}
-                numOfAssignments={classItem.numOfAssignments}
+                key={classItem.class_id}
+                className={classItem.class_name}
+                // numOfLectures={classItem.numOfLectures}
+                // numOfAssignments={classItem.numOfAssignments}
               />
             ))}
           </div>
