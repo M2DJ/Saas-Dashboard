@@ -2,12 +2,10 @@ import {
   createContext,
   useContext,
   useEffect,
-  useState,
   type ReactNode,
 } from "react";
 import { supabase } from "../services/Supabase";
 import { UserAuth } from "./AuthContext";
-import type { ClassesType } from "../pages/ClassesPage";
 
 type TableResult = {
   success: boolean;
@@ -16,7 +14,6 @@ type TableResult = {
 };
 
 type TableContextType = {
-  classes: ClassesType[];
   addClass: (nameOfClass: string) => Promise<TableResult>;
   getClasses: () => Promise<TableResult>;
 };
@@ -24,7 +21,7 @@ type TableContextType = {
 const TableContext = createContext<TableContextType | undefined>(undefined);
 
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
-  const [classes, setClassses] = useState<ClassesType[]>([]);
+  
 
   const { session } = UserAuth();
 
@@ -81,12 +78,11 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       return { success: false, error };
     }
 
-    setClassses(data);
     return { success: true, data };
   };
 
   return (
-    <TableContext.Provider value={{ classes, getClasses, addClass }}>
+    <TableContext.Provider value={{ getClasses, addClass }}>
       {children}
     </TableContext.Provider>
   );

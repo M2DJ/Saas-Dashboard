@@ -19,12 +19,25 @@ const ClassesPage = () => {
   const [selectedClass, setSelectedClass] = useState(false);
   const [createClassName, setCreateClassName] = useState("");
 
-  const { classes, addClass, getClasses } = tableInserterAndRemover();
+  //State for classes
+  const [classes, setClassses] = useState<ClassesType[]>([]);
+  const [classError, setClassError] = useState("");
+  const [classLoading, setClassLoading] = useState("");
+
+  const { addClass, getClasses } = tableInserterAndRemover();
 
   useEffect(() => {
     const getThoseClasses = async () => {
       try {
-        await getClasses();
+        const result = await getClasses();
+
+        if(result.success == false) {
+          console.log("An error has occured while fetching classes: ",result.error);
+          setClassError(result.error.message);
+        } else {
+          setClassses(result.data);
+        }
+        
       } catch (e) {
         console.log("An error has occured: ", e);
       }
