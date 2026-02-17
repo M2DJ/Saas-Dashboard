@@ -3,6 +3,7 @@ import ClassesCard from "../components/ClassesCard";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import ClassContent from "./ClassContent";
 import { tableInserterAndRemover } from "../context/TableContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export type ClassesType = {
   class_id: string;
@@ -23,14 +24,17 @@ const ClassesPage = () => {
 
   //State for classes
   const [classError, setClassError] = useState("");
-  const [classLoading, setClassLoading] = useState("");
+  const [classLoading, setClassLoading] = useState(false);
 
-  const { classes, addClass, getClasses } = tableInserterAndRemover();
+  const { classes, addClass, getClasses, joinClass } =
+    tableInserterAndRemover();
 
   //For fetching classes
   useEffect(() => {
     const getThoseClasses = async () => {
       try {
+        setClassLoading(true);
+
         const result = await getClasses();
 
         if (result.success == false) {
@@ -42,6 +46,8 @@ const ClassesPage = () => {
         }
       } catch (e) {
         console.log("An error has occured: ", e);
+      } finally {
+        setClassLoading(false);
       }
     };
 
@@ -206,16 +212,22 @@ const ClassesPage = () => {
             <div className="h-[0.1px] bg-[#B2A9A9]"></div>
           </div>
 
-          <div onClick={() => setSelectedClass(true)} className="px-6">
-            {classes.map((classItem) => (
-              <ClassesCard
-                key={classItem.class_id}
-                className={classItem.class_name}
-                numOfLectures={classItem.numOfLectures ?? 0}
-                numOfAssignments={classItem.numOfAssignments ?? 0}
-              />
-            ))}
-          </div>
+          {classLoading ? (
+            <div className="h-[85vh] flex justify-center items-center">
+              <LoadingSpinner size="lg" />
+            </div>
+          ) : (
+            <div onClick={() => setSelectedClass(true)} className="px-6">
+              {classes.map((classItem) => (
+                <ClassesCard
+                  key={classItem.class_id}
+                  className={classItem.class_name}
+                  numOfLectures={classItem.numOfLectures ?? 0}
+                  numOfAssignments={classItem.numOfAssignments ?? 0}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </>
