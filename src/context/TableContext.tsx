@@ -12,13 +12,14 @@ import type { ClassesType } from "../pages/ClassesPage";
 type TableResult = {
   success: boolean;
   error?: any;
-  data?: any;
+  data?: any[] | ClassesType[];
 };
 
 type TableContextType = {
   classes: ClassesType[];
   addClass: (nameOfClass: string) => Promise<TableResult>;
   getClasses: () => Promise<TableResult>;
+  joinClass: (classId: string) => Promise<TableResult>;
 };
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
@@ -91,14 +92,70 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       return { success: false, error };
     }
 
-    const classesWithCounts = data.map(classItem => ({
-    ...classItem,
-    numOfLectures: classItem.lectures?.[0]?.count || 0,
-    numOfAssignments: classItem.assignments?.[0]?.count || 0
-  }));
+    const classesWithCounts = data.map((classItem) => ({
+      ...classItem,
+      numOfLectures: classItem.lectures?.[0]?.count || 0,
+      numOfAssignments: classItem.assignments?.[0]?.count || 0,
+    }));
 
     setClassses(classesWithCounts);
     return { success: true, data };
+  };
+
+  const joinClass = async (classId: string) => {
+    const {
+      data: { session: currentSession },
+    } = await supabase.auth.getSession();
+
+    if (!currentSession?.user?.id) {
+      return {
+        success: false,
+        error: "User not authenticated",
+      };
+    }
+
+    const { data: classData, error: classError } = await supabase
+      .from("Classes")
+      .select("*")
+      .eq("class_id", classId)
+      .single();
+
+    if (!classData || classError) {
+      return {
+        success: false,
+        error: "Class was not found",
+      };
+    }
+
+    const { data: existingMember } = await supabase
+      .from("ClassMember")
+      .select("*")
+      .eq("class_id", classId)
+      .eq("user_id", currentSession?.user.id)
+      .single();
+    if (existingMember) {
+      return {
+        success: false,
+        error: "You are already a member of this class",
+      };
+    }
+
+    const { data, error } = await supabase
+      .from("ClassMember")
+      .insert({
+        user_id: currentSession?.user.id,
+        class_id: classId,
+      })
+      .single();
+    if(error){
+      console.log("Error joining class: ",error);
+      return {
+        success: false,
+        error
+      }
+    }
+
+    return {success: true, data};
   };
 
   return (
@@ -106,6 +163,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       value={{
         classes,
         getClasses,
+        joinClass,
         addClass,
       }}
     >
