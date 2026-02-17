@@ -18,13 +18,14 @@ const ClassesPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
-  const [createAClass, setCreateAClass] = useState("");
-  const [selectedClass, setSelectedClass] = useState(false);
-  const [createClassName, setCreateClassName] = useState("");
-
+  
   //State for classes
   const [classError, setClassError] = useState("");
   const [classLoading, setClassLoading] = useState(false);
+  const [createAClass, setCreateAClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState(false);
+  const [createClassName, setCreateClassName] = useState("");
+  const [joinClassId, setJoinClassId] = useState("");
 
   const { classes, addClass, getClasses, joinClass } =
     tableInserterAndRemover();
@@ -54,7 +55,7 @@ const ClassesPage = () => {
     getThoseClasses();
   }, []);
 
-  const submitCreateClass = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submitCreateClass = async () => {
     try {
       const result = await addClass(createClassName);
 
@@ -68,6 +69,22 @@ const ClassesPage = () => {
       console.log("There was an error creating the class: ", e);
     }
   };
+
+  const submitJoinClass = async() => {
+    try{
+
+      const result = await joinClass(joinClassId);
+
+      if(result.success){
+        handleCloseAnimationPopUp();
+        setJoinClassId("")
+      } else {
+        console.log("Failed to join class: ",result.error);
+      }
+    } catch(e) {
+      console.log("There was an error joining the class: ", e);
+    }
+  }
 
   const handleCloseAnimationPopUp = () => {
     setIsClosing(true);
@@ -172,18 +189,24 @@ const ClassesPage = () => {
                     <img src={Arrow_Back} className="w-7" />
                   </button>
 
-                  <div className="h-40 flex flex-col justify-center items-center">
-                    <div className="w-20 h-28 bg-[#BEBEBE] rounded-lg text-5xl flex justify-center items-center mb-2">
-                      #
+                  <form onSubmit={submitJoinClass}>
+                    <div className="h-40 flex flex-col justify-center items-center">
+                      <div className="w-20 h-28 bg-[#BEBEBE] rounded-lg text-5xl flex justify-center items-center mb-2">
+                        #
+                      </div>
+                      <p className="font-bold text-lg mb-2">
+                        Insert class code here
+                      </p>
+                      <input
+                        type="text"
+                        className="bg-[#BEBEBE] rounded-md p-2 text-md"
+                        onChange={(e) => setJoinClassId(e.target.value)}
+                      />
+                      <button className="px-4 py-1 rounded-md bg-[#5B92FF] text-xl text-white">
+                        Join
+                      </button>
                     </div>
-                    <p className="font-bold text-lg mb-2">
-                      Insert class code here
-                    </p>
-                    <input
-                      type="text"
-                      className="bg-[#BEBEBE] rounded-md p-2 text-md"
-                    />
-                  </div>
+                  </form>
                 </div>
               </>
             )}

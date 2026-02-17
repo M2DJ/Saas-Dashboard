@@ -86,20 +86,47 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     `,
       )
       .eq("class_creator", currentSession.user.id);
-
     if (error) {
       console.log("Error fetching classes: ", error);
       return { success: false, error };
     }
 
-    const classesWithCounts = data.map((classItem) => ({
+    const { data: memberClasses, error: memberError } = await supabase
+      .from("ClassMembers")
+      .select(
+        `
+      class:Classes(
+        *,
+        lectures:ClassLectures(count),
+        assignments:ClassAssignments(count)
+      )
+    `,
+      )
+      .eq("user_id", currentSession?.user.id);
+
+    if (error || memberError) {
+      console.log("Error fetching classes:", error || memberError);
+      return { success: false, error: error || memberError };
+    }
+
+    //Extracting class data
+    const memberClassesData = memberClasses?.map((item) => item.class) || [];
+
+    const allClasses = [...(data || []), ...memberClassesData];
+
+    const uniqueClasses = allClasses.filter(
+      (classItem, index, self) =>
+        index === self.findIndex((c) => c.class_id === classItem.class_id),
+    );
+
+    const classesWithCounts = uniqueClasses.map((classItem) => ({
       ...classItem,
       numOfLectures: classItem.lectures?.[0]?.count || 0,
       numOfAssignments: classItem.assignments?.[0]?.count || 0,
     }));
 
     setClassses(classesWithCounts);
-    return { success: true, data };
+    return { success: true, data: classesWithCounts };
   };
 
   const joinClass = async (classId: string) => {
@@ -147,15 +174,15 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
         class_id: classId,
       })
       .single();
-    if(error){
-      console.log("Error joining class: ",error);
+    if (error) {
+      console.log("Error joining class: ", error);
       return {
         success: false,
-        error
-      }
+        error,
+      };
     }
 
-    return {success: true, data};
+    return { success: true, data };
   };
 
   return (
