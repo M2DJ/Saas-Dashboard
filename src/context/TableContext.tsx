@@ -12,7 +12,7 @@ import type { ClassesType } from "../pages/ClassesPage";
 type TableResult = {
   success: boolean;
   error?: any;
-  data?: any[] | ClassesType[];
+  data?: any | any[] | ClassesType[];
 };
 
 type TableContextType = {
