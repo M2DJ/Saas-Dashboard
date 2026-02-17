@@ -155,7 +155,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const { data: existingMember } = await supabase
-      .from("ClassMember")
+      .from("ClassMembers")
       .select("*")
       .eq("class_id", classId)
       .eq("user_id", currentSession?.user.id)
@@ -168,12 +168,12 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const { data, error } = await supabase
-      .from("ClassMember")
+      .from("ClassMembers")
       .insert({
         user_id: currentSession?.user.id,
         class_id: classId,
       })
-      .single();
+      .select();
     if (error) {
       console.log("Error joining class: ", error);
       return {

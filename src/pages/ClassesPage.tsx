@@ -18,7 +18,7 @@ const ClassesPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
-  
+
   //State for classes
   const [classError, setClassError] = useState("");
   const [classLoading, setClassLoading] = useState(false);
@@ -55,11 +55,13 @@ const ClassesPage = () => {
     getThoseClasses();
   }, []);
 
-  const submitCreateClass = async () => {
+  const submitCreateClass = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       const result = await addClass(createClassName);
 
       if (result.success) {
+        await getClasses();
         handleCloseAnimationPopUp();
         setCreateClassName("");
       } else {
@@ -70,21 +72,22 @@ const ClassesPage = () => {
     }
   };
 
-  const submitJoinClass = async() => {
-    try{
-
+  const submitJoinClass = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
       const result = await joinClass(joinClassId);
 
-      if(result.success){
+      if (result.success) {
+        await getClasses();
         handleCloseAnimationPopUp();
-        setJoinClassId("")
+        setJoinClassId("");
       } else {
-        console.log("Failed to join class: ",result.error);
+        console.log("Failed to join class: ", result.error);
       }
-    } catch(e) {
+    } catch (e) {
       console.log("There was an error joining the class: ", e);
     }
-  }
+  };
 
   const handleCloseAnimationPopUp = () => {
     setIsClosing(true);
@@ -199,7 +202,7 @@ const ClassesPage = () => {
                       </p>
                       <input
                         type="text"
-                        className="bg-[#BEBEBE] rounded-md p-2 text-md"
+                        className="bg-[#BEBEBE] rounded-md p-2 text-md mb-2"
                         onChange={(e) => setJoinClassId(e.target.value)}
                       />
                       <button className="px-4 py-1 rounded-md bg-[#5B92FF] text-xl text-white">
