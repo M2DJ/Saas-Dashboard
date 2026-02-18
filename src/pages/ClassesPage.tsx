@@ -23,13 +23,16 @@ const ClassesPage = () => {
   const [classError, setClassError] = useState("");
   const [classLoading, setClassLoading] = useState(false);
   const [createAClass, setCreateAClass] = useState("");
-  const [selectedClass, setSelectedClass] = useState(false);
+  const [classSwitcher, setClassSwitcher] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<string | null>("");
   const [createClassName, setCreateClassName] = useState("");
   const [joinClassId, setJoinClassId] = useState("");
-
+  
   const { classes, addClass, getClasses, joinClass } =
-    tableInserterAndRemover();
-
+  tableInserterAndRemover();
+  
+  const selectedClassData = classes.find((c) => c.class_id === selectedClass);
+  
   //For fetching classes
   useEffect(() => {
     const getThoseClasses = async () => {
@@ -217,10 +220,11 @@ const ClassesPage = () => {
         </>
       )}
 
-      {selectedClass ? (
+      {classSwitcher ? (
         <ClassContent
-          onClick={() => setSelectedClass(false)}
-          nameOfClass={classes[0].class_name}
+          key={selectedClassData!.class_id}
+          onClick={() => setClassSwitcher(false)}
+          classData={selectedClassData!}
           lectures={lectures}
         />
       ) : (
@@ -243,14 +247,19 @@ const ClassesPage = () => {
               <LoadingSpinner size="lg" />
             </div>
           ) : (
-            <div onClick={() => setSelectedClass(true)} className="px-6">
+            <div
+              onClick={() => setClassSwitcher(true)}
+              className="px-6 grid grid-cols-2"
+            >
               {classes.map((classItem) => (
-                <ClassesCard
-                  key={classItem.class_id}
-                  className={classItem.class_name}
-                  numOfLectures={classItem.numOfLectures ?? 0}
-                  numOfAssignments={classItem.numOfAssignments ?? 0}
-                />
+                <div onClick={() => setSelectedClass(classItem.class_id)}>
+                  <ClassesCard
+                    key={classItem.class_id}
+                    className={classItem.class_name}
+                    numOfLectures={classItem.numOfLectures ?? 0}
+                    numOfAssignments={classItem.numOfAssignments ?? 0}
+                  />
+                </div>
               ))}
             </div>
           )}

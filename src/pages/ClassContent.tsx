@@ -1,6 +1,7 @@
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import Book_Logo from "../assets/images/Book_Logo.svg";
 import Search_Icon from "../assets/images/Search_Icon.svg";
+import type { ClassesType } from "./ClassesPage";
 
 type LecturesList = {
   fileName: string;
@@ -10,13 +11,13 @@ type LecturesList = {
 
 type ClassContentProps = {
   onClick: () => void;
-  nameOfClass: string;
+  classData: ClassesType;
   lectures: LecturesList[];
 };
 
 const ClassContent = ({
   onClick,
-  nameOfClass,
+  classData,
   lectures,
 }: ClassContentProps) => {
   return (
@@ -28,7 +29,7 @@ const ClassContent = ({
           </button>
           <p className="text-4xl">
             <span className="text-gray-600 opacity-50">Classes</span> /{" "}
-            {nameOfClass}
+            {classData.class_name}
           </p>
         </div>
         <div className="h-[0.1px] bg-[#B2A9A9]"></div>
