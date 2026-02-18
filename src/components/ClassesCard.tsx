@@ -21,9 +21,9 @@ const ClassesCard = ({
   };
 
   return (
-    <div className="font-inter h-[180px] w-[370px] p-2 rounded-xl relative shadow-[0px_0px_8px_rgba(0,0,0,0.3)]">
+    <div className="font-inter h-[170px] w-[320px] p-2 rounded-xl relative shadow-[0px_0px_8px_rgba(0,0,0,0.3)]">
       <div className="flex justify-between items-start">
-          <div className="h-22 w-22 bg-[#707070] rounded-xl flex justify-center items-center mb-5">
+          <div className="h-22 w-22 bg-[#707070] rounded-xl flex justify-center items-center mb-3">
             <p className="text-5xl text-white">{clipClassName(className)}</p>
           </div>
         <button className="mt-3 mr-2">

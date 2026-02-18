@@ -249,7 +249,7 @@ const ClassesPage = () => {
           ) : (
             <div
               onClick={() => setClassSwitcher(true)}
-              className="px-6 grid grid-cols-2"
+              className="px-6 grid grid-cols-3"
             >
               {classes.map((classItem) => (
                 <div onClick={() => setSelectedClass(classItem.class_id)}>
