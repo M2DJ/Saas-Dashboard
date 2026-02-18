@@ -27,12 +27,12 @@ const ClassesPage = () => {
   const [selectedClass, setSelectedClass] = useState<string | null>("");
   const [createClassName, setCreateClassName] = useState("");
   const [joinClassId, setJoinClassId] = useState("");
-  
+
   const { classes, addClass, getClasses, joinClass } =
-  tableInserterAndRemover();
-  
+    tableInserterAndRemover();
+
   const selectedClassData = classes.find((c) => c.class_id === selectedClass);
-  
+
   //For fetching classes
   useEffect(() => {
     const getThoseClasses = async () => {
@@ -245,6 +245,11 @@ const ClassesPage = () => {
           {classLoading ? (
             <div className="h-[85vh] flex justify-center items-center">
               <LoadingSpinner size="lg" />
+            </div>
+          ) : classError ? (
+            <div className="h-[85vh] flex flex-col justify-center items-center">
+              <p className="text-3xl text-red-500">There was an error getting your classes</p>
+              <p className="text-xl">Try agian momentarily</p>
             </div>
           ) : (
             <div
