@@ -2,6 +2,8 @@ import Class_Selected from "../assets/images/Class_Selected.svg";
 import Class_Unselected from "../assets/images/Class_Unselected.svg";
 import Assignment_Selected from "../assets/images/Assignment_Selected.svg";
 import Assignment_Unselected from "../assets/images/Assignment_Unselected.svg";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleUser } from '@fortawesome/free-solid-svg-icons'
 import { useState } from "react";
 import ClassesPage from "./ClassesPage";
 import AssignmentsPage from "./AssignmentsPage";
@@ -13,21 +15,8 @@ function DashboardPage() {
   return (
     <div className="flex h-screen font-inter">
       <div className="bg-[#5B92FF] min-w-26 flex flex-col items-center py-4">
-        <div className="h-15">
-          <svg
-            className="fill-current text-white"
-            width="65px"
-            height="65px"
-            viewBox="-11.5 -10.23174 23 20.46348"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="0" cy="0" r="2.05" />
-            <g stroke="currentColor" strokeWidth="1" fill="none">
-              <ellipse rx="11" ry="4.2" />
-              <ellipse rx="11" ry="4.2" transform="rotate(60)" />
-              <ellipse rx="11" ry="4.2" transform="rotate(120)" />
-            </g>
-          </svg>
+        <div className="">
+          <FontAwesomeIcon icon={faCircleUser} size="4x" className="text-white"/>
         </div>
         <div className="h-screen flex flex-col items-center justify-evenly">
           <div>
