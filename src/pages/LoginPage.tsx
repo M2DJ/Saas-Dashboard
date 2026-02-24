@@ -45,7 +45,7 @@ const LoginPage = () => {
       const result = await logIn(email, password);
 
       if (result.success) {
-        //Navigate to dashboard
+        navigate("/dashboard")
       } else if (!result.success) {
         setLoginError(result.error);
       }
