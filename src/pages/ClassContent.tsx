@@ -1,6 +1,7 @@
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import Book_Logo from "../assets/images/Book_Logo.svg";
 import Search_Icon from "../assets/images/Search_Icon.svg";
+import { UserAuth } from "../context/AuthContext";
 import type { ClassesType } from "./ClassesPage";
 
 type LecturesList = {
@@ -15,11 +16,9 @@ type ClassContentProps = {
   lectures: LecturesList[];
 };
 
-const ClassContent = ({
-  onClick,
-  classData,
-  lectures,
-}: ClassContentProps) => {
+const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
+  const { session: currentSession } = UserAuth();
+
   return (
     <div className="font-inter">
       <div className="h-20 py-3 px-6">
@@ -35,15 +34,24 @@ const ClassContent = ({
         <div className="h-[0.1px] bg-[#B2A9A9]"></div>
       </div>
 
-      <div className="px-6 mb-2">
-        <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
-          <img src={Book_Logo} className="mb-2" />
-          <p className="text-3xl mb-2">Add Files, Videos or Assignments</p>
-          <button className="rounded-lg text-white text-xl bg-[#5B92FF] p-2 shadow-[0px_2px_10px_rgba(0,0,0,0.4)]">
-            Upload File
-          </button>
+      {classData.class_creator === currentSession?.user.id ? (
+        <div className="px-6 mb-2">
+          <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
+            <img src={Book_Logo} className="mb-2" />
+            <p className="text-3xl mb-2">Add Files, Videos or Assignments</p>
+            <button className="rounded-lg text-white text-xl bg-[#5B92FF] p-2 shadow-[0px_2px_10px_rgba(0,0,0,0.4)]">
+              Upload File
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="px-6 mb-2">
+          <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
+            <img src={Book_Logo} className="mb-2" />
+            <p className="text-3xl mb-2">Latest Files</p>
+          </div>
+        </div>
+      )}
 
       <div className="px-6">
         <div className="flex justify-between items-center mb-2">
