@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import Book_Logo from "../assets/images/Book_Logo.svg";
 import Search_Icon from "../assets/images/Search_Icon.svg";
@@ -17,92 +18,118 @@ type ClassContentProps = {
 };
 
 const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
+  //Opening and closing pop up state
+  const [openPopUp, setOpenPopUp] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
   const { session: currentSession } = UserAuth();
 
   return (
-    <div className="font-inter">
-      <div className="h-20 py-3 px-6">
-        <div className="mb-2 flex items-center">
-          <button onClick={onClick} className="mr-3">
-            <img src={Arrow_Back} className="w-[34px]" />
-          </button>
-          <p className="text-4xl">
-            <span className="text-gray-600 opacity-50">Classes</span> /{" "}
-            {classData.class_name}
-          </p>
-        </div>
-        <div className="h-[0.1px] bg-[#B2A9A9]"></div>
-      </div>
-
-      {classData.class_creator === currentSession?.user.id ? (
-        <div className="px-6 mb-2">
-          <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
-            <img src={Book_Logo} className="mb-2" />
-            <p className="text-3xl mb-2">Add Files, Videos or Assignments</p>
-            <button className="rounded-lg text-white text-xl bg-[#5B92FF] p-2 shadow-[0px_2px_10px_rgba(0,0,0,0.4)]">
-              Upload File
-            </button>
+    <>
+      {openPopUp && (
+        <>
+          <div
+            onClick={() => setOpenPopUp(false)}
+            className="fixed inset-0 bg-black opacity-50 z-3"
+          ></div>
+          <div className="bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4">
+            <div className="h-80 flex flex-col justify-center items-center">
+              <button className="p-2 text-2xl text-white font-semibold w-100 bg-[#5B92FF] rounded-lg mb-2">Add lecture</button>
+              <p className="text-xl mb-2">OR</p>
+              <button className="p-2 text-2xl text-white font-semibold w-100 bg-[#5B92FF] rounded-lg">Add Assignment</button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="px-6 mb-2">
-          <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
-            <img src={Book_Logo} className="mb-2" />
-            <p className="text-3xl mb-2">Latest Files</p>
-          </div>
-        </div>
+        </>
       )}
 
-      <div className="px-6">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex">
-            <p className="text-[26px] mr-2">All Files</p>
-            <select className="text-[26px] border-[#B2A9A9] border-2 rounded-lg focus:outline-none">
-              <option>File Type</option>
-            </select>
+      <div className="font-inter">
+        <div className="h-20 py-3 px-6">
+          <div className="mb-2 flex items-center">
+            <button onClick={onClick} className="mr-3">
+              <img src={Arrow_Back} className="w-[34px]" />
+            </button>
+            <p className="text-4xl">
+              <span className="text-gray-600 opacity-50">Classes</span> /{" "}
+              {classData.class_name}
+            </p>
           </div>
-
-          <div className="relative">
-            <input
-              type="text"
-              className="h-[34px] border-[#B2A9A9] border-2 rounded-lg py-1 pl-8 focus:outline-none"
-              placeholder="Search for a Leacture"
-            />
-            <img src={Search_Icon} className="w-6 absolute top-1 left-1" />
-          </div>
+          <div className="h-[0.1px] bg-[#B2A9A9]"></div>
         </div>
 
-        <div className="flex justify-between items-center">
-          <p className="text-lg">File Name</p>
-
-          <div className="flex mr-15 text-lg">
-            <p className="mr-11">Upload Date</p>
-            <p className="">Size</p>
-          </div>
-        </div>
-        <div className="h-[0.1px] bg-black mb-3"></div>
-
-        <div className="overflow-y-auto h-54">
-          {lectures.map((lecture, index) => (
-            <div key={index}>
-              <div className="flex justify-between items-center">
-                <p>{lecture.fileName}</p>
-
-                <div className="flex items-center mr-15">
-                  <p className="mr-11">
-                    {lecture.uploadDate.toString().substring(0, 15)}
-                  </p>
-                  <p>{lecture.fileSize}</p>
-                </div>
-              </div>
-              {index !== lectures.length - 1 && (
-                <div className="h-[0.1px] bg-[#B2A9A9] my-3"></div>
-              )}
+        {classData.class_creator === currentSession?.user.id ? (
+          <div className="px-6 mb-2">
+            <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
+              <img src={Book_Logo} className="mb-2" />
+              <p className="text-3xl mb-2">Add Files, Videos or Assignments</p>
+              <button
+                onClick={() => setOpenPopUp(true)}
+                className="rounded-lg text-white text-xl bg-[#5B92FF] p-2 shadow-[0px_2px_10px_rgba(0,0,0,0.4)]"
+              >
+                Upload File
+              </button>
             </div>
-          ))}
+          </div>
+        ) : (
+          <div className="px-6 mb-2">
+            <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
+              <img src={Book_Logo} className="mb-2" />
+              <p className="text-3xl mb-2">Latest Files</p>
+            </div>
+          </div>
+        )}
+
+        <div className="px-6">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex">
+              <p className="text-[26px] mr-2">All Files</p>
+              <select className="text-[26px] border-[#B2A9A9] border-2 rounded-lg focus:outline-none">
+                <option>File Type</option>
+              </select>
+            </div>
+
+            <div className="relative">
+              <input
+                type="text"
+                className="h-[34px] border-[#B2A9A9] border-2 rounded-lg py-1 pl-8 focus:outline-none"
+                placeholder="Search for a Leacture"
+              />
+              <img src={Search_Icon} className="w-6 absolute top-1 left-1" />
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <p className="text-lg">File Name</p>
+
+            <div className="flex mr-15 text-lg">
+              <p className="mr-11">Upload Date</p>
+              <p className="">Size</p>
+            </div>
+          </div>
+          <div className="h-[0.1px] bg-black mb-3"></div>
+
+          <div className="overflow-y-auto h-54">
+            {lectures.map((lecture, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-center">
+                  <p>{lecture.fileName}</p>
+
+                  <div className="flex items-center mr-15">
+                    <p className="mr-11">
+                      {lecture.uploadDate.toString().substring(0, 15)}
+                    </p>
+                    <p>{lecture.fileSize}</p>
+                  </div>
+                </div>
+                {index !== lectures.length - 1 && (
+                  <div className="h-[0.1px] bg-[#B2A9A9] my-3"></div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
