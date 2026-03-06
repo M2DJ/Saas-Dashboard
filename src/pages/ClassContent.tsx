@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import Book_Logo from "../assets/images/Book_Logo.svg";
 import Search_Icon from "../assets/images/Search_Icon.svg";
 import { UserAuth } from "../context/AuthContext";
 import type { ClassesType } from "./ClassesPage";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-regular-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 type LecturesList = {
   fileName: string;
@@ -23,6 +26,12 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
   const [isOpening, setIsOpening] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
+  //Adding a lecture or assignment state
+  const [addFiles, setAddFiles] = useState("");
+  const [fileUploaded, setFileUploaded] = useState<File | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { session: currentSession } = UserAuth();
 
   return (
@@ -33,13 +42,86 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
             onClick={() => setOpenPopUp(false)}
             className="fixed inset-0 bg-black opacity-50 z-3"
           ></div>
-          <div className="bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4">
-            <div className="h-80 flex flex-col justify-center items-center">
-              <button className="p-2 text-2xl text-white font-semibold w-100 bg-[#5B92FF] rounded-lg mb-2">Add lecture</button>
-              <p className="text-xl mb-2">OR</p>
-              <button className="p-2 text-2xl text-white font-semibold w-100 bg-[#5B92FF] rounded-lg">Add Assignment</button>
+          {addFiles === "" ? (
+            <div className="bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4">
+              <div className="h-80 flex flex-col justify-center items-center">
+                <button
+                  onClick={() => setAddFiles("lecture")}
+                  className="p-2 text-2xl text-white font-semibold w-100 bg-[#5B92FF] rounded-lg mb-2"
+                >
+                  Add lecture
+                </button>
+                <p className="text-xl mb-2">OR</p>
+                <button
+                  onClick={() => setAddFiles("assignment")}
+                  className="p-2 text-2xl text-white font-semibold w-100 bg-[#5B92FF] rounded-lg"
+                >
+                  Add Assignment
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4 overflow-y-hidden">
+              {addFiles === "lecture" ? (
+                <div className="">
+                  <button onClick={() => setAddFiles("")}>
+                    <FontAwesomeIcon icon={faArrowLeft} size="xl" />
+                  </button>
+                  <div className="flex justify-center">
+                    <form>
+                      <label className="text-lg">Lecture Name</label>
+                      <br />
+                      <input
+                        type="text"
+                        className="w-100 h-8 pl-2 bg-[#A2A2A2] rounded-md mb-3"
+                      />
+                      <br />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="p-2 text-2xl text-white font-semibold bg-[#5B92FF] rounded-lg"
+                      >
+                        Upload Lecture File
+                      </button>
+                      <br />
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) setFileUploaded(file);
+                        }}
+                        className="hidden"
+                      />
+                      <br />
+
+                      {fileUploaded && (
+                        <div className="h-2 flex items-center">
+                          <FontAwesomeIcon icon={faFile} size="xl" />
+                          <p className="text-xl">{fileUploaded.name}</p>
+                        </div>
+                      )}
+
+                      <div className="h-40 flex justify-center items-center">
+                        <button
+                          type="submit"
+                          className="p-2 text-2xl text-white font-semibold bg-[#5B92FF] rounded-lg"
+                        >
+                          Submit lecture
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <button onClick={() => setAddFiles("")}>
+                    <FontAwesomeIcon icon={faArrowLeft} size="xl" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
 
