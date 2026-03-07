@@ -87,6 +87,7 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
                       <input
                         type="file"
                         ref={fileInputRef}
+                        accept=".pdf,.doc,.docx,.ppt,.pptx"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) setFileUploaded(file);

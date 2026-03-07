@@ -20,6 +20,17 @@ type TableContextType = {
   addClass: (nameOfClass: string) => Promise<TableResult>;
   getClasses: () => Promise<TableResult>;
   joinClass: (classId: string) => Promise<TableResult>;
+  uploadLecture: (
+    lecture: File,
+    lectureName: string,
+    classId: string,
+    nameOfClass: string,
+  ) => Promise<TableResult>;
+  loadLectures: (nameOfClass: string) => Promise<TableResult>;
+  loadLecturesContent: (
+    nameOfClass: string,
+    lectureName: string,
+  ) => Promise<TableResult>;
 };
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
@@ -185,6 +196,108 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, data };
   };
 
+  const uploadLecture = async (
+    lecture: File,
+    lectureName: string,
+    classId: string,
+    nameOfClass: string,
+  ) => {
+    //First: add the lecture name to the "ClassLectures" table
+    const { data: LectureCreation, error: lectureCreationError } =
+      await supabase
+        .from("ClassLectures")
+        .insert([{ class_id: classId, lecture_name: lectureName }])
+        .select()
+        .single();
+    if (lectureCreationError) {
+      console.error("Error creating lecture: ", lectureCreationError);
+      return { success: false, lectureCreationError };
+    }
+
+    //Second: Upload the lecture file
+    const { data: existingFiles, error: listError } = await supabase.storage
+      .from("ClassLectures")
+      .list(nameOfClass);
+
+    if (listError) {
+      console.error("Error listing files: ", listError);
+      return { success: false, error: listError };
+    }
+
+    const fileCount = existingFiles.length || 0;
+
+    const { error: uploadedFileError } = await supabase.storage
+      .from("ClassLectures")
+      .upload(`${nameOfClass}/Lecture_${fileCount + 1}`, lecture);
+
+    if (uploadedFileError) {
+      console.error("Failed to upload lecture: ", uploadedFileError);
+      return { success: false, uploadedFileError };
+    }
+
+    //Third: store the file URL in the "ClassLectureFiles" for future use
+
+    //To get the file URL
+    const { data: uploadedFileURL } = supabase.storage
+      .from("ClassLectures")
+      .getPublicUrl(`${nameOfClass}/Lecture_${fileCount}`);
+    //Inserting the row with the URL
+    const { error } = await supabase.from("ClassLectureFiles").insert([
+      {
+        lecture_id: LectureCreation?.lecture_id,
+        lecture_file_URL: uploadedFileURL,
+      },
+    ]);
+
+    if (error) {
+      console.error("Error inserting row: ", error);
+      return { success: false, error };
+    }
+
+    return { success: true };
+  };
+
+  //Get all the files with the given class name
+  const loadLectures = async (nameOfClass: string) => {
+    const { data, error } = await supabase.storage
+      .from(nameOfClass)
+      .list(nameOfClass, {
+        sortBy: {
+          column: "name",
+          order: "asc",
+        },
+      });
+
+    if (error) {
+      console.error("Error while fetching lectures: ", error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  };
+
+  //To get the content inside each lecture
+  const loadLecturesContent = async (
+    nameOfClass: string,
+    lecturesName: string,
+  ) => {
+    const { data, error } = await supabase.storage
+      .from(nameOfClass)
+      .list(lecturesName, {
+        sortBy: {
+          column: "name",
+          order: "asc",
+        },
+      });
+
+    if (error) {
+      console.error("Error while fetching leacture files: ", error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  };
+
   return (
     <TableContext.Provider
       value={{
@@ -192,6 +305,9 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
         getClasses,
         joinClass,
         addClass,
+        uploadLecture,
+        loadLectures,
+        loadLecturesContent,
       }}
     >
       {children}
