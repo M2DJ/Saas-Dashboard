@@ -12,7 +12,7 @@ import type { ClassesType } from "../pages/ClassesPage";
 type TableResult = {
   success: boolean;
   error?: any;
-  data?: any | any[] | ClassesType[];
+  data?: any | any[];
 };
 
 type TableContextType = {
@@ -30,6 +30,19 @@ type TableContextType = {
   loadLecturesContent: (
     nameOfClass: string,
     lectureName: string,
+  ) => Promise<TableResult>;
+  uploadAssignment: (
+    assignment: File,
+    assignmentName: string,
+    classId: string,
+    nameOfClass: string,
+    dueDate: string | Date,
+  ) => Promise<TableResult>;
+  deleteAssignmentAfterDueDate: (assignmentId: string) => Promise<TableResult>;
+  loadAssignments: (nameOfClass: string) => Promise<TableResult>;
+  loadAssignmentContents: (
+    nameOfClass: string,
+    assignmentName: string,
   ) => Promise<TableResult>;
 };
 
@@ -298,6 +311,120 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, data };
   };
 
+  const uploadAssignment = async (
+    assignment: File,
+    assignmentName: string,
+    classId: string,
+    nameOfClass: string,
+    dueDate: string | Date,
+  ) => {
+    //First: Add a row with the assignment details to the "ClassAssignments" table
+    const { data: addedAssignment, error: addedAssignmentError } =
+      await supabase
+        .from("ClassAssignments")
+        .insert([
+          {
+            assignment_name: assignmentName,
+            class_id: classId,
+            due_date: dueDate,
+          },
+        ])
+        .select()
+        .single();
+    if (addedAssignmentError) {
+      console.error(
+        "An error as occured while adding your assingmnet: ",
+        addedAssignmentError,
+      );
+      return { success: false, addedAssignmentError };
+    }
+
+    //Second: Upload the file to the storage bucket called "ClassAssignments"
+    const { data: numOfFiles, error: listFilesError } = await supabase.storage
+      .from("ClassAssignments")
+      .list(nameOfClass);
+    if (listFilesError) {
+      console.error("Error listing files: ", listFilesError);
+      return { success: false, listFilesError };
+    }
+
+    const fileCount = numOfFiles.length || 0;
+
+    const { error: uploadedAssignmentFileError } = await supabase.storage
+      .from("ClassAssignments")
+      .upload(`${nameOfClass}/$Assignment_${fileCount + 1}`, assignment);
+
+    if (uploadedAssignmentFileError) {
+      console.error(
+        "Error uploading assignment file: ",
+        uploadedAssignmentFileError,
+      );
+      return { success: false, uploadedAssignmentFileError };
+    }
+
+    //Third: Add the file URL to the "ClassAssignmentFiles" table
+    const { data: assignmentFileURL } = await supabase.storage
+      .from("ClassAssignment")
+      .getPublicUrl(`${nameOfClass}/Assignment_${fileCount + 1}`);
+
+    const { error } = await supabase
+      .from("ClassAssignmentFiles")
+      .insert([
+        {
+          assignment_id: addedAssignment?.assignment_id,
+          assignment_file_URL: assignmentFileURL,
+        },
+      ])
+      .single();
+    if (error) {
+      console.error("An error has occured while adding you files: ", error);
+      return { success: false, error };
+    }
+
+    return { success: true };
+  };
+
+  const deleteAssignmentAfterDueDate = async (assignmentId: string) => {};
+
+  const loadAssignments = async (nameOfClass: string) => {
+    const { data, error } = await supabase.storage
+      .from("ClassAssignments")
+      .list(nameOfClass, {
+        sortBy: {
+          column: "name",
+          order: "asc",
+        },
+      });
+
+    if (error) {
+      console.error("Error while fetching assignment list: ", error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  };
+
+  const loadAssignmentContents = async (
+    nameOfClass: string,
+    assignmentName: string,
+  ) => {
+    const { data, error } = await supabase.storage
+      .from(nameOfClass)
+      .list(assignmentName, {
+        sortBy: {
+          column: "name",
+          order: "asc",
+        },
+      });
+
+    if (error) {
+      console.error("Error while fetching assignment list: ", error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  };
+
   return (
     <TableContext.Provider
       value={{
@@ -308,6 +435,10 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
         uploadLecture,
         loadLectures,
         loadLecturesContent,
+        uploadAssignment,
+        deleteAssignmentAfterDueDate,
+        loadAssignments,
+        loadAssignmentContents,
       }}
     >
       {children}
