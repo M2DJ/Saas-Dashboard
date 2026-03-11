@@ -11,7 +11,7 @@ import type { ClassesType } from "../pages/ClassesPage";
 
 type TableResult = {
   success: boolean;
-  error?: any;
+  error?: any | any[];
   data?: any | any[];
 };
 
@@ -37,6 +37,11 @@ type TableContextType = {
     classId: string,
     nameOfClass: string,
     dueDate: string | Date,
+  ) => Promise<TableResult>;
+  uploadAssignmentSolution: (
+    assignmentSol: File,
+    classId: string,
+    nameOfClass: string,
   ) => Promise<TableResult>;
   deleteAssignmentAfterDueDate: (assignmentId: string) => Promise<TableResult>;
   loadAssignments: (nameOfClass: string) => Promise<TableResult>;
@@ -384,6 +389,55 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true };
   };
 
+  const uploadAssignmentSolution = async (
+    assignmentSol: File,
+    classId: string,
+    nameOfClass: string,
+  ) => {
+    //First: Get the assignment id that is related to the class that has the assignment
+    const { data, error: assignmentIdError } = await supabase
+      .from("ClassAssignment")
+      .select("assignment_id")
+      .eq("class_id", classId)
+      .single();
+    if (assignmentIdError) {
+      console.error("Failed to fetch assignment id: ", assignmentIdError);
+      return { success: false, assignmentIdError };
+    }
+
+    const assignmentId = data?.assignment_id;
+
+    //Second: Upload the solution file to the path "class name_solution/user id"
+    const { error: uploadedSolutionError } = await supabase.storage
+      .from("ClassAssignments")
+      .upload(`${nameOfClass}_solutions/${session?.user.id}`, assignmentSol);
+    if (uploadedSolutionError) {
+      console.error("Error uploading your solution: ", uploadedSolutionError);
+      return { success: false, uploadedSolutionError };
+    }
+
+    //Third: Upload the solution file URL to the "ClassAssignmentsFiles" table
+    const { data: publicURL } = await supabase.storage
+      .from("ClassAssignment")
+      .getPublicUrl(`${nameOfClass}_solutions/${session?.user.id}`);
+
+    const { error } = await supabase
+      .from("ClassAssignmentFiles")
+      .insert([
+        {
+          assignment_id: assignmentId,
+          assignment_file_URL: publicURL,
+        },
+      ])
+      .select();
+    if (error) {
+      console.error("Error adding the files to the table: ", error);
+      return { success: false, error };
+    }
+
+    return { success: true };
+  };
+
   const deleteAssignmentAfterDueDate = async (assignmentId: string) => {};
 
   const loadAssignments = async (nameOfClass: string) => {
@@ -436,6 +490,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
         loadLectures,
         loadLecturesContent,
         uploadAssignment,
+        uploadAssignmentSolution,
         deleteAssignmentAfterDueDate,
         loadAssignments,
         loadAssignmentContents,
