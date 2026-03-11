@@ -43,7 +43,10 @@ type TableContextType = {
     classId: string,
     nameOfClass: string,
   ) => Promise<TableResult>;
-  deleteAssignmentAfterDueDate: (assignmentId: string) => Promise<TableResult>;
+  deleteAssignmentAfterDueDate: (
+    assignmentId: string,
+    nameOfClass: string,
+  ) => Promise<TableResult>;
   loadAssignments: (nameOfClass: string) => Promise<TableResult>;
   loadAssignmentContents: (
     nameOfClass: string,
@@ -438,7 +441,54 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true };
   };
 
-  const deleteAssignmentAfterDueDate = async (assignmentId: string) => {};
+  const deleteAssignmentAfterDueDate = async (
+    assignmentId: string,
+    nameOfClass: string,
+  ) => {
+    //First delete the row from the table "ClassAssignments"
+    const { data, error } = await supabase
+      .from("ClassAssignments")
+      .select("*")
+      .eq("assignment_id", assignmentId)
+      .single();
+
+    if (error) {
+      console.error("Error occured while fetching the assignment", error);
+      return { success: false, error };
+    }
+
+    if (new Date(data?.due_date).getTime() === new Date().getTime()) {
+      const { error: assignmentDeleteFromTableError } = await supabase
+        .from("ClassAssignments")
+        .delete()
+        .eq("assignemnt_id", assignmentId);
+      if (assignmentDeleteFromTableError) {
+        console.error(
+          "Error deleting assignment from table",
+          assignmentDeleteFromTableError,
+        );
+        return { success: false, assignmentDeleteFromTableError };
+      }
+
+      const { data: fileURL, error: fileURLError } = await supabase
+        .from("ClassAssignmentFiles")
+        .select("assignment_file_URL")
+        .eq("assignment_id", assignmentId);
+      if (fileURLError) return { success: false, fileURLError };
+
+      const filePaths = fileURL?.map((item) => {
+        const file = item.assignment_file_URL;
+        return file.split("/storage/v1/object/public/ClassAssignments/")[1];
+      });
+
+      const { error: deleteFileError } = await supabase.storage
+        .from("ClassAssignments")
+        .remove(filePaths);
+      if(deleteFileError) return { success: false, deleteFileError };
+    }
+
+    return { success: true };
+  };
 
   const loadAssignments = async (nameOfClass: string) => {
     const { data, error } = await supabase.storage
