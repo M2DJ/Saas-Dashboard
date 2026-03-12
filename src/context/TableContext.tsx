@@ -34,6 +34,7 @@ type TableContextType = {
   uploadAssignment: (
     assignment: File,
     assignmentName: string,
+    assignemntDesc: string,
     classId: string,
     nameOfClass: string,
     dueDate: string | Date,
@@ -45,7 +46,6 @@ type TableContextType = {
   ) => Promise<TableResult>;
   deleteAssignmentAfterDueDate: (
     assignmentId: string,
-    nameOfClass: string,
   ) => Promise<TableResult>;
   loadAssignments: (nameOfClass: string) => Promise<TableResult>;
   loadAssignmentContents: (
@@ -322,6 +322,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   const uploadAssignment = async (
     assignment: File,
     assignmentName: string,
+    assignemntDesc: string,
     classId: string,
     nameOfClass: string,
     dueDate: string | Date,
@@ -334,6 +335,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
           {
             assignment_name: assignmentName,
             class_id: classId,
+            assignment_desc: assignemntDesc,
             due_date: dueDate,
           },
         ])
@@ -443,7 +445,6 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteAssignmentAfterDueDate = async (
     assignmentId: string,
-    nameOfClass: string,
   ) => {
     //First delete the row from the table "ClassAssignments"
     const { data, error } = await supabase
