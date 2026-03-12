@@ -6,3 +6,9 @@ export type ClassesType = {
   numOfLectures?: number;
   numOfAssignments?: number;
 };
+
+export type AssignmentType = {
+  assignmentName: string;
+  assignmentDesc: string;
+  dueDate: string | Date;
+}

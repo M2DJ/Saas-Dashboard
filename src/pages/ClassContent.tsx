@@ -3,7 +3,7 @@ import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import Book_Logo from "../assets/images/Book_Logo.svg";
 import Search_Icon from "../assets/images/Search_Icon.svg";
 import { UserAuth } from "../context/AuthContext";
-import type { ClassesType } from "./ClassesPage";
+import type { ClassesType } from "../types/Types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";

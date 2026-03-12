@@ -1,17 +1,16 @@
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
+import type { AssignmentType } from "../types/Types";
 
 type AssignmentProps = {
   nameOfClass: string;
-  assignmentTitle: string;
-  desc: string;
+  assignmentData: AssignmentType;
   file: string;
   onClick: () => void;
 };
 
 const AssignmentContent = ({
   nameOfClass,
-  assignmentTitle,
-  desc,
+  assignmentData,
   file,
   onClick,
 }: AssignmentProps) => {
@@ -30,9 +29,11 @@ const AssignmentContent = ({
         <div className="h-[0.1px] bg-[#B2A9A9]"></div>
 
         <div className="w-100 mt-3">
-          <p className="text-3xl font-bold mb-2">{assignmentTitle}</p>
+          <p className="text-3xl font-bold mb-2">
+            {assignmentData.assignmentName}
+          </p>
 
-          <p className="mb-12">{desc}</p>
+          <p className="mb-12">{assignmentData.assignmentDesc}</p>
 
           <p className="mb-2">{file}</p>
 
