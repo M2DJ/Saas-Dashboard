@@ -7,7 +7,7 @@ import {
 } from "react";
 import { supabase } from "../services/Supabase";
 import { UserAuth } from "./AuthContext";
-import type { ClassesType } from "../pages/ClassesPage";
+import type { ClassesType } from "../types/Types"
 
 type TableResult = {
   success: boolean;

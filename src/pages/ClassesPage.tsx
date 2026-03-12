@@ -5,15 +5,6 @@ import ClassContent from "./ClassContent";
 import { tableInserterAndRemover } from "../context/TableContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-export type ClassesType = {
-  class_id: string;
-  class_name: string;
-  class_creator: string;
-  created_at: string;
-  numOfLectures?: number;
-  numOfAssignments?: number;
-};
-
 const ClassesPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
