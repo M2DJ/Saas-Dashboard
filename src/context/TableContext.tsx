@@ -7,7 +7,7 @@ import {
 } from "react";
 import { supabase } from "../services/Supabase";
 import { UserAuth } from "./AuthContext";
-import type { ClassesType } from "../types/Types"
+import type { ClassesType } from "../types/Types";
 
 type TableResult = {
   success: boolean;
@@ -27,10 +27,7 @@ type TableContextType = {
     nameOfClass: string,
   ) => Promise<TableResult>;
   loadLectures: (nameOfClass: string) => Promise<TableResult>;
-  loadLecturesContent: (
-    nameOfClass: string,
-    lectureName: string,
-  ) => Promise<TableResult>;
+  loadLecturesContent: (lectureId: string) => Promise<TableResult>;
   uploadAssignment: (
     assignment: File,
     assignmentName: string,
@@ -44,14 +41,9 @@ type TableContextType = {
     classId: string,
     nameOfClass: string,
   ) => Promise<TableResult>;
-  deleteAssignmentAfterDueDate: (
-    assignmentId: string,
-  ) => Promise<TableResult>;
+  deleteAssignmentAfterDueDate: (assignmentId: string) => Promise<TableResult>;
   loadAssignments: (nameOfClass: string) => Promise<TableResult>;
-  loadAssignmentContents: (
-    nameOfClass: string,
-    assignmentName: string,
-  ) => Promise<TableResult>;
+  loadAssignmentContents: (assignmentId: string) => Promise<TableResult>;
 };
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
@@ -281,7 +273,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   //Get all the files with the given class name
   const loadLectures = async (nameOfClass: string) => {
     const { data, error } = await supabase.storage
-      .from(nameOfClass)
+      .from("ClassLectures")
       .list(nameOfClass, {
         sortBy: {
           column: "name",
@@ -298,25 +290,17 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   //To get the content inside each lecture
-  const loadLecturesContent = async (
-    nameOfClass: string,
-    lecturesName: string,
-  ) => {
-    const { data, error } = await supabase.storage
-      .from(nameOfClass)
-      .list(lecturesName, {
-        sortBy: {
-          column: "name",
-          order: "asc",
-        },
-      });
-
-    if (error) {
-      console.error("Error while fetching leacture files: ", error);
-      return { success: false, error };
+  const loadLecturesContent = async (lectureId: string) => {
+    const { data: lectureFileURL, error: lectureFileURLError } = await supabase
+      .from("ClassLectureFiles")
+      .select("lecture_file_URL")
+      .eq("lecture_id", lectureId)
+      .single();
+    if (lectureFileURLError) {
+      return { success: false, lectureFileURLError };
     }
 
-    return { success: true, data };
+    return { success: true, lectureFileURL };
   };
 
   const uploadAssignment = async (
@@ -443,9 +427,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true };
   };
 
-  const deleteAssignmentAfterDueDate = async (
-    assignmentId: string,
-  ) => {
+  const deleteAssignmentAfterDueDate = async (assignmentId: string) => {
     //First delete the row from the table "ClassAssignments"
     const { data, error } = await supabase
       .from("ClassAssignments")
@@ -485,7 +467,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       const { error: deleteFileError } = await supabase.storage
         .from("ClassAssignments")
         .remove(filePaths);
-      if(deleteFileError) return { success: false, deleteFileError };
+      if (deleteFileError) return { success: false, deleteFileError };
     }
 
     return { success: true };
@@ -509,25 +491,16 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, data };
   };
 
-  const loadAssignmentContents = async (
-    nameOfClass: string,
-    assignmentName: string,
-  ) => {
-    const { data, error } = await supabase.storage
-      .from(nameOfClass)
-      .list(assignmentName, {
-        sortBy: {
-          column: "name",
-          order: "asc",
-        },
-      });
+  const loadAssignmentContents = async (assignmentId: string) => {
+    const { data: assignmentFileURL, error: assignmentFileURLError } =
+      await supabase
+        .from("ClassAssignmentFiles")
+        .select("assignment_file_URL")
+        .eq("assignment_id", assignmentId);
+    if (assignmentFileURLError)
+      return { success: false, assignmentFileURLError };
 
-    if (error) {
-      console.error("Error while fetching assignment list: ", error);
-      return { success: false, error };
-    }
-
-    return { success: true, data };
+    return { success: true, assignmentFileURL };
   };
 
   return (
