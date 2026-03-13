@@ -8,6 +8,7 @@ import {
 import { supabase } from "../services/Supabase";
 import { UserAuth } from "./AuthContext";
 import type { ClassesType } from "../types/Types";
+import { data } from "react-router-dom";
 
 type TableResult = {
   success: boolean;
@@ -239,9 +240,14 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
     const fileCount = existingFiles.length || 0;
 
+    //Extract the file extention
+    const fileExt = lecture.name.split('.').pop(); 
+    const fileName = `Lecture_${fileCount + 1}.${fileExt}`;
+    const fullPath = `${nameOfClass}/${fileName}`;
+
     const { error: uploadedFileError } = await supabase.storage
       .from("ClassLectures")
-      .upload(`${nameOfClass}/Lecture_${fileCount + 1}`, lecture);
+      .upload(fullPath, lecture);
 
     if (uploadedFileError) {
       console.error("Failed to upload lecture: ", uploadedFileError);
@@ -253,12 +259,12 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     //To get the file URL
     const { data: uploadedFileURL } = supabase.storage
       .from("ClassLectures")
-      .getPublicUrl(`${nameOfClass}/Lecture_${fileCount}`);
+      .getPublicUrl(fullPath);
     //Inserting the row with the URL
     const { error } = await supabase.from("ClassLectureFiles").insert([
       {
         lecture_id: LectureCreation?.leacture_id,
-        lecture_file_URL: uploadedFileURL,
+        lecture_file_URL: uploadedFileURL.publicUrl,
       },
     ]);
 
@@ -287,16 +293,16 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
   //To get the content inside each lecture
   const loadLecturesContent = async (lectureId: string) => {
-    const { data: lectureFileURL, error: lectureFileURLError } = await supabase
+    const { data, error } = await supabase
       .from("ClassLectureFiles")
       .select("lecture_file_URL")
       .eq("lecture_id", lectureId)
       .single();
-    if (lectureFileURLError) {
-      return { success: false, lectureFileURLError };
+    if (error) {
+      return { success: false, error };
     }
 
-    return { success: true, lectureFileURL };
+    return { success: true, data: data.lecture_file_URL };
   };
 
   const uploadAssignment = async (
@@ -339,10 +345,14 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const fileCount = numOfFiles.length || 0;
+    
+    const fileExt = addedAssignment.name.split('.').pop(); 
+    const fileName = `Assignment_${fileCount + 1}.${fileExt}`;
+    const fullPath = `${nameOfClass}/${fileName}`;
 
     const { error: uploadedAssignmentFileError } = await supabase.storage
       .from("ClassAssignments")
-      .upload(`${nameOfClass}/$Assignment_${fileCount + 1}`, assignment);
+      .upload(fullPath, assignment);
 
     if (uploadedAssignmentFileError) {
       console.error(
@@ -362,7 +372,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       .insert([
         {
           assignment_id: addedAssignment?.assignment_id,
-          assignment_file_URL: assignmentFileURL,
+          assignment_file_URL: assignmentFileURL.publicUrl,
         },
       ])
       .single();
@@ -411,7 +421,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       .insert([
         {
           assignment_id: assignmentId,
-          assignment_file_URL: publicURL,
+          assignment_file_URL: publicURL.publicUrl,
         },
       ])
       .select();
@@ -484,15 +494,16 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const loadAssignmentContents = async (assignmentId: string) => {
-    const { data: assignmentFileURL, error: assignmentFileURLError } =
+    const { data, error } =
       await supabase
         .from("ClassAssignmentFiles")
         .select("assignment_file_URL")
-        .eq("assignment_id", assignmentId);
-    if (assignmentFileURLError)
-      return { success: false, assignmentFileURLError };
+        .eq("assignment_id", assignmentId)
+        .single();
+    if (error)
+      return { success: false, error };
 
-    return { success: true, assignmentFileURL };
+    return { success: true, data: data.assignment_file_URL };
   };
 
   return (

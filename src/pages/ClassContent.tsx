@@ -8,13 +8,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { tableInserterAndRemover } from "../context/TableContext";
-import { supabase } from "../services/Supabase";
 
 type LecturesList = {
-  lecture_id: string;
+  leacture_id: string;
   lecture_name: string;
   created_at: string;
 };
+
+// type LectureContentLink = {
+//   lecture_file_URL: string;
+// }
 
 type ClassContentProps = {
   onClick: () => void;
@@ -24,7 +27,7 @@ type ClassContentProps = {
 const ClassContent = ({ onClick, classData }: ClassContentProps) => {
   //The lectures list state
   const [lectures, setLectures] = useState<LecturesList[]>([]);
-
+  const [lectureContent, setLectureContent] = useState<string | null>(null);
   //Opening and closing pop up state
   const [openPopUp, setOpenPopUp] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
@@ -50,7 +53,7 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
   const assignmentFileInputRef = useRef<HTMLInputElement>(null);
 
   const { session: currentSession } = UserAuth();
-  const { uploadLecture, uploadAssignment, loadLectures } =
+  const { uploadLecture, uploadAssignment, loadLectures, loadLecturesContent } =
     tableInserterAndRemover();
 
   //Getting the lectures
@@ -71,7 +74,6 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
 
     getThoseLectures();
   }, []);
-  console.log(lectures);
   //Submitting the assignments and lectures
   const submitLecture = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -334,20 +336,34 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
             <p className="text-lg">File Name</p>
 
             <div className="flex mr-15 text-lg">
-              <p className="mr-11">Upload Date</p>
-              <p className="">Size</p>
+              <p className="">Upload Date</p>
             </div>
           </div>
           <div className="h-[0.1px] bg-black mb-3"></div>
 
           <div className="overflow-y-auto h-54">
             {lectures.map((lecture, index) => (
-              <div key={index}>
+              <div
+                key={lecture.leacture_id}
+                onClick={async () => {
+                  try {
+                    const results = await loadLecturesContent(
+                      lecture.leacture_id,
+                    );
+                    if (!results.success) console.error(results.error);
+
+                    setLectureContent(results.data);
+                    console.log(lectureContent);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }}
+              >
                 <div className="flex justify-between items-center">
-                  <p>{lecture.lecture_name}</p>
+                  <p className="ml-1">{lecture.lecture_name}</p>
 
                   <div className="flex items-center mr-15">
-                    <p className="mr-11">
+                    <p className="mr-2">
                       {lecture.created_at.substring(0, 10)}
                     </p>
                   </div>
@@ -358,6 +374,14 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
               </div>
             ))}
           </div>
+          {lectureContent && (
+            <div className="w-full h-screen">
+              <embed
+                src={`${lectureContent}#toolbar=0&navpanes=0`}
+                className="w-full h-full border"
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
