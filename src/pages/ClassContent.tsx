@@ -28,9 +28,14 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
 
   //Adding a lecture or assignment state
   const [addFiles, setAddFiles] = useState("");
-  const [fileUploaded, setFileUploaded] = useState<File | null>(null);
+  const [lectureFileUploaded, setLectureFileUploaded] = useState<File | null>(
+    null,
+  );
+  const [assignmentFileUploaded, setAssignmentFileUploaded] =
+    useState<File | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const lectureFileInputRef = useRef<HTMLInputElement>(null);
+  const assignmentFileInputRef = useRef<HTMLInputElement>(null);
 
   const { session: currentSession } = UserAuth();
 
@@ -78,7 +83,7 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
                       <br />
                       <button
                         type="button"
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => lectureFileInputRef.current?.click()}
                         className="p-2 text-2xl text-white font-semibold bg-[#5B92FF] rounded-lg"
                       >
                         Upload Lecture File
@@ -86,20 +91,20 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
                       <br />
                       <input
                         type="file"
-                        ref={fileInputRef}
+                        ref={lectureFileInputRef}
                         accept=".pdf,.doc,.docx,.ppt,.pptx"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
-                          if (file) setFileUploaded(file);
+                          if (file) setLectureFileUploaded(file);
                         }}
                         className="hidden"
                       />
                       <br />
 
-                      {fileUploaded && (
+                      {lectureFileUploaded && (
                         <div className="h-2 flex items-center">
                           <FontAwesomeIcon icon={faFile} size="xl" />
-                          <p className="text-xl">{fileUploaded.name}</p>
+                          <p className="text-xl">{lectureFileUploaded.name}</p>
                         </div>
                       )}
 
@@ -119,6 +124,61 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
                   <button onClick={() => setAddFiles("")}>
                     <FontAwesomeIcon icon={faArrowLeft} size="xl" />
                   </button>
+
+                  <div className="h-80 flex justify-center overflow-y-auto">
+                    <form>
+                      <label>Assignment Name</label>
+                      <br />
+                      <input
+                        type="text"
+                        className="w-100 h-8 pl-2 bg-[#A2A2A2] rounded-md mb-3"
+                      />
+                      <br />
+                      <label>Assignment Description</label>
+                      <br />
+                      <textarea className="min-w-100 min-h-20 p-2 bg-[#A2A2A2] rounded-md mb-3" />
+                      <br />
+                      <label>Due Date</label>
+                      <br />
+                      <input
+                        type="datetime-local"
+                        min={new Date().toISOString().slice(0, 16)}
+                      />
+                      <br />
+                      <button
+                        type="button"
+                        onClick={() => assignmentFileInputRef.current?.click()}
+                        className="p-2 text-2xl text-white font-semibold bg-[#5B92FF] rounded-lg my-5"
+                      >
+                        Upload Lecture File
+                      </button>
+                      <br />
+                      <input
+                        type="file"
+                        ref={assignmentFileInputRef}
+                        accept=".pdf,.doc,.docx,.ppt,.pptx"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) setAssignmentFileUploaded(file);
+                        }}
+                        className="hidden"
+                      />
+                      {assignmentFileUploaded && (
+                        <div className="h-2 flex items-center">
+                          <FontAwesomeIcon icon={faFile} size="xl" />
+                          <p className="text-xl">{assignmentFileUploaded.name}</p>
+                        </div>
+                      )}
+                      <div className="h-25 flex justify-center items-center">
+                        <button
+                          type="submit"
+                          className="p-2 text-2xl text-white font-semibold bg-[#5B92FF] rounded-lg"
+                        >
+                          Submit Assignment
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               )}
             </div>
