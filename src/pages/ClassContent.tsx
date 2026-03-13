@@ -7,6 +7,7 @@ import type { ClassesType } from "../types/Types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { tableInserterAndRemover } from "../context/TableContext";
 
 type LecturesList = {
   fileName: string;
@@ -31,13 +32,65 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
   const [lectureFileUploaded, setLectureFileUploaded] = useState<File | null>(
     null,
   );
+  const [lectureName, setLectureName] = useState("");
   const [assignmentFileUploaded, setAssignmentFileUploaded] =
     useState<File | null>(null);
+  const [assignmentName, setAssignmentName] = useState("");
+  const [assignmentDesc, setAssignmentDesc] = useState(``);
+  const [assignmentDueDate, setAssginmentDueDate] = useState<Date | string>("");
+
+  //State for loading
+  const [isLoadingUploadedFiles, setIsLoadingUploadedFiles] = useState(false);
+  const [isLoadingLectures, setIsLoadingLectures] = useState(false);
 
   const lectureFileInputRef = useRef<HTMLInputElement>(null);
   const assignmentFileInputRef = useRef<HTMLInputElement>(null);
 
   const { session: currentSession } = UserAuth();
+  const { uploadLecture, uploadAssignment } = tableInserterAndRemover();
+
+  const submitLecture = async () => {
+    try {
+      setIsLoadingUploadedFiles(true);
+
+      const result = await uploadLecture(
+        lectureFileUploaded!,
+        lectureName,
+        classData.class_id,
+        classData.class_name,
+      );
+      if (!result.success) {
+        console.error(result.error);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoadingUploadedFiles(false);
+    }
+  };
+
+  const submitAssignment = async () => {
+    try {
+      setIsLoadingUploadedFiles(true);
+
+      const result = await uploadAssignment(
+        assignmentFileUploaded!,
+        assignmentName,
+        assignmentDesc,
+        classData.class_id,
+        classData.class_name,
+        assignmentDueDate,
+      );
+
+      if (!result.success) {
+        console.error(result.error);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoadingUploadedFiles(false);
+    }
+  };
 
   return (
     <>
@@ -73,12 +126,14 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
                     <FontAwesomeIcon icon={faArrowLeft} size="xl" />
                   </button>
                   <div className="flex justify-center">
-                    <form>
+                    <form onSubmit={submitLecture}>
                       <label className="text-lg">Lecture Name</label>
                       <br />
                       <input
                         type="text"
                         className="w-100 h-8 pl-2 bg-[#A2A2A2] rounded-md mb-3"
+                        value={lectureName}
+                        onChange={(e) => setLectureName(e.target.value)}
                       />
                       <br />
                       <button
@@ -126,23 +181,30 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
                   </button>
 
                   <div className="h-80 flex justify-center overflow-y-auto">
-                    <form>
+                    <form onSubmit={submitAssignment}>
                       <label>Assignment Name</label>
                       <br />
                       <input
                         type="text"
                         className="w-100 h-8 pl-2 bg-[#A2A2A2] rounded-md mb-3"
+                        value={assignmentName}
+                        onChange={(e) => setAssignmentName(e.target.value)}
                       />
                       <br />
                       <label>Assignment Description</label>
                       <br />
-                      <textarea className="min-w-100 min-h-20 p-2 bg-[#A2A2A2] rounded-md mb-3" />
+                      <textarea
+                        className="min-w-100 min-h-20 p-2 bg-[#A2A2A2] rounded-md mb-3"
+                        value={assignmentDesc}
+                        onChange={(e) => setAssignmentDesc(e.target.value)}
+                      />
                       <br />
                       <label>Due Date</label>
                       <br />
                       <input
                         type="datetime-local"
                         min={new Date().toISOString().slice(0, 16)}
+                        onChange={(e) => setAssginmentDueDate(e.target.value)}
                       />
                       <br />
                       <button
@@ -166,7 +228,9 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
                       {assignmentFileUploaded && (
                         <div className="h-2 flex items-center">
                           <FontAwesomeIcon icon={faFile} size="xl" />
-                          <p className="text-xl">{assignmentFileUploaded.name}</p>
+                          <p className="text-xl">
+                            {assignmentFileUploaded.name}
+                          </p>
                         </div>
                       )}
                       <div className="h-25 flex justify-center items-center">
