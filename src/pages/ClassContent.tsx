@@ -49,8 +49,7 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
   const { session: currentSession } = UserAuth();
   const { uploadLecture, uploadAssignment } = tableInserterAndRemover();
 
-  const submitLecture = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitLecture = async () => {
     try {
       setIsLoadingUploadedFiles(true);
 
@@ -70,8 +69,7 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
     }
   };
 
-  const submitAssignment = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const submitAssignment = async () => {
     try {
       setIsLoadingUploadedFiles(true);
 
