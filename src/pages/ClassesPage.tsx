@@ -99,23 +99,6 @@ const ClassesPage = () => {
     setTimeout(() => setIsOpening(false), 50);
   };
 
-  const lectures = [
-    {
-      fileName: "First Lecture",
-      uploadDate: new Date(),
-      fileSize: 2.4,
-    },
-    {
-      fileName: "Second Lecture",
-      uploadDate: new Date(),
-      fileSize: 2.4,
-    },
-    {
-      fileName: "Third Lecture",
-      uploadDate: new Date(),
-      fileSize: 2.4,
-    },
-  ];
   return (
     <>
       {openDialog && (
@@ -216,7 +199,6 @@ const ClassesPage = () => {
           key={selectedClassData!.class_id}
           onClick={() => setClassSwitcher(false)}
           classData={selectedClassData!}
-          lectures={lectures}
         />
       ) : (
         <div className="font-inter">

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import Book_Logo from "../assets/images/Book_Logo.svg";
 import Search_Icon from "../assets/images/Search_Icon.svg";
@@ -8,20 +8,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { tableInserterAndRemover } from "../context/TableContext";
+import { supabase } from "../services/Supabase";
 
 type LecturesList = {
-  fileName: string;
-  uploadDate: Date;
-  fileSize: number;
+  lecture_id: string;
+  lecture_name: string;
+  created_at: string;
 };
 
 type ClassContentProps = {
   onClick: () => void;
   classData: ClassesType;
-  lectures: LecturesList[];
 };
 
-const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
+const ClassContent = ({ onClick, classData }: ClassContentProps) => {
+  //The lectures list state
+  const [lectures, setLectures] = useState<LecturesList[]>([]);
+
   //Opening and closing pop up state
   const [openPopUp, setOpenPopUp] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
@@ -47,9 +50,31 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
   const assignmentFileInputRef = useRef<HTMLInputElement>(null);
 
   const { session: currentSession } = UserAuth();
-  const { uploadLecture, uploadAssignment } = tableInserterAndRemover();
+  const { uploadLecture, uploadAssignment, loadLectures } =
+    tableInserterAndRemover();
 
-  const submitLecture = async () => {
+  //Getting the lectures
+  useEffect(() => {
+    const getThoseLectures = async () => {
+      try {
+        const result = await loadLectures(classData.class_id);
+
+        if (!result.success) {
+          console.error(result.error);
+        }
+
+        setLectures(result.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    getThoseLectures();
+  }, []);
+  console.log(lectures);
+  //Submitting the assignments and lectures
+  const submitLecture = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setIsLoadingUploadedFiles(true);
 
@@ -319,13 +344,12 @@ const ClassContent = ({ onClick, classData, lectures }: ClassContentProps) => {
             {lectures.map((lecture, index) => (
               <div key={index}>
                 <div className="flex justify-between items-center">
-                  <p>{lecture.fileName}</p>
+                  <p>{lecture.lecture_name}</p>
 
                   <div className="flex items-center mr-15">
                     <p className="mr-11">
-                      {lecture.uploadDate.toString().substring(0, 15)}
+                      {lecture.created_at.substring(0, 10)}
                     </p>
-                    <p>{lecture.fileSize}</p>
                   </div>
                 </div>
                 {index !== lectures.length - 1 && (

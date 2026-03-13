@@ -26,7 +26,7 @@ type TableContextType = {
     classId: string,
     nameOfClass: string,
   ) => Promise<TableResult>;
-  loadLectures: (nameOfClass: string) => Promise<TableResult>;
+  loadLectures: (classId: string) => Promise<TableResult>;
   loadLecturesContent: (lectureId: string) => Promise<TableResult>;
   uploadAssignment: (
     assignment: File,
@@ -42,7 +42,7 @@ type TableContextType = {
     nameOfClass: string,
   ) => Promise<TableResult>;
   deleteAssignmentAfterDueDate: (assignmentId: string) => Promise<TableResult>;
-  loadAssignments: (nameOfClass: string) => Promise<TableResult>;
+  loadAssignments: (classId: string) => Promise<TableResult>;
   loadAssignmentContents: (assignmentId: string) => Promise<TableResult>;
 };
 
@@ -271,15 +271,11 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   //Get all the files with the given class name
-  const loadLectures = async (nameOfClass: string) => {
-    const { data, error } = await supabase.storage
+  const loadLectures = async (classId: string) => {
+    const { data, error } = await supabase
       .from("ClassLectures")
-      .list(nameOfClass, {
-        sortBy: {
-          column: "name",
-          order: "asc",
-        },
-      });
+      .select("*")
+      .eq("class_id", classId);
 
     if (error) {
       console.error("Error while fetching lectures: ", error);
@@ -473,15 +469,11 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true };
   };
 
-  const loadAssignments = async (nameOfClass: string) => {
-    const { data, error } = await supabase.storage
+  const loadAssignments = async (classId: string) => {
+    const { data, error } = await supabase
       .from("ClassAssignments")
-      .list(nameOfClass, {
-        sortBy: {
-          column: "name",
-          order: "asc",
-        },
-      });
+      .select("*")
+      .eq("class_id", classId);
 
     if (error) {
       console.error("Error while fetching assignment list: ", error);
