@@ -265,7 +265,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     //Inserting the row with the URL
     const { error } = await supabase.from("ClassLectureFiles").insert([
       {
-        lecture_id: LectureCreation?.lecture_id,
+        lecture_id: LectureCreation?.leacture_id,
         lecture_file_URL: uploadedFileURL,
       },
     ]);
