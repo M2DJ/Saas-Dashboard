@@ -391,7 +391,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     //First: Get the assignment id that is related to the class that has the assignment
     const { data, error: assignmentIdError } = await supabase
-      .from("ClassAssignment")
+      .from("ClassAssignments")
       .select("assignment_id")
       .eq("class_id", classId)
       .single();
@@ -401,11 +401,13 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const assignmentId = data?.assignment_id;
-
+    
+    const solutionPath = `${nameOfClass}_solutions/${session?.user.id}`;
+    
     //Second: Upload the solution file to the path "class name_solution/user id"
     const { error: uploadedSolutionError } = await supabase.storage
       .from("ClassAssignments")
-      .upload(`${nameOfClass}_solutions/${session?.user.id}`, assignmentSol);
+      .upload(solutionPath, assignmentSol);
     if (uploadedSolutionError) {
       console.error("Error uploading your solution: ", uploadedSolutionError);
       return { success: false, uploadedSolutionError };
@@ -414,7 +416,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     //Third: Upload the solution file URL to the "ClassAssignmentsFiles" table
     const { data: publicURL } = await supabase.storage
       .from("ClassAssignment")
-      .getPublicUrl(`${nameOfClass}_solutions/${session?.user.id}`);
+      .getPublicUrl(solutionPath);
 
     const { error } = await supabase
       .from("ClassAssignmentFiles")

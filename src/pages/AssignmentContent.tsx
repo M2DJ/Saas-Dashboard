@@ -1,15 +1,23 @@
+import { useRef, useState } from "react";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import type { AssignmentType } from "../types/Types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-regular-svg-icons";
 
 type AssignmentProps = {
   assignmentData: AssignmentType;
   onClick: () => void;
 };
 
-const AssignmentContent = ({
-  assignmentData,
-  onClick,
-}: AssignmentProps) => {
+const AssignmentContent = ({ assignmentData, onClick }: AssignmentProps) => {
+  const [uploadedAssignmentFile, setUploadedAssignmentFile] = useState<
+    File | undefined
+  >();
+
+  const uploadedAssignmentRef = useRef<HTMLInputElement>(null);
+
+  const submitAssignmentSolution = async () => {};
+
   return (
     <div className="font-inter">
       <div className="h-20 py-3 px-6">
@@ -31,12 +39,38 @@ const AssignmentContent = ({
 
           <p className="mb-12">{assignmentData.assignment_desc}</p>
 
-          {/* Add assignment file here */}
-          <iframe />
+          <div className="mb-7">
+            {uploadedAssignmentFile != undefined && (
+              <div className="h-2 flex items-center">
+                <FontAwesomeIcon icon={faFile} size="xl" />
+                <p className="text-xl">{uploadedAssignmentFile.name}</p>
+              </div>
+            )}
+          </div>
 
-          <button className="rounded-md py-2 px-1 text-lg text-white bg-[#5B92FF] shadow-[0px_2px_10px_rgba(0,0,0,0.4)]">
-            Upload files
-          </button>
+          <form onSubmit={submitAssignmentSolution}>
+            <button
+              type={uploadedAssignmentFile != undefined ? "submit" : "button"}
+              onClick={() => uploadedAssignmentRef.current?.click()}
+              className="rounded-md py-2 px-1 text-lg text-white bg-[#5B92FF] shadow-[0px_2px_10px_rgba(0,0,0,0.4)]"
+            >
+              {uploadedAssignmentFile != undefined
+                ? "Submit Files"
+                : "Upload Files"}
+            </button>
+            <br />
+            <input
+              type="file"
+              ref={uploadedAssignmentRef}
+              accept=".pdf,.doc,.docx,.ppt,.pptx"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setUploadedAssignmentFile(file);
+              }}
+              className="hidden"
+            />
+            <br />
+          </form>
         </div>
       </div>
     </div>
