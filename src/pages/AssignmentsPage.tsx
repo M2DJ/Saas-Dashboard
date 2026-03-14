@@ -1,43 +1,84 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AssignmentsCard from "../components/AssignmentsCard";
 import AssignmentContent from "./AssignmentContent";
 import type { AssignmentType } from "../types/Types";
+import { tableInserterAndRemover } from "../context/TableContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const AssignmentsPage = () => {
-  const [selectedAssignment, setSelectedAssignment] = useState(false);
+  const [togleAssignmentContent, setTogleAssignmentContent] = useState(false);
+
+  //Loading assignments state
+  const [selectedAssignment, setSelectedAssignment] = useState("");
   const [assignments, setAssignments] = useState<AssignmentType[]>([]);
-  
+  const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
+
+  const { loadAssignments } = tableInserterAndRemover();
+
+  useEffect(() => {
+    const getThoseAssignments = async () => {
+      try {
+        setIsLoadingAssignments(true);
+        const results = await loadAssignments();
+
+        if (!results.success) console.error(results.error);
+
+        setAssignments(results.data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoadingAssignments(false);
+      }
+    };
+
+    getThoseAssignments();
+  }, []);
+
+  const assignmentContent = assignments.find(
+    (a) => a.assignment_id === selectedAssignment,
+  );
 
   return (
     <>
-      {selectedAssignment ? (
+      {togleAssignmentContent ? (
         <AssignmentContent
-          nameOfClass={"Python"}
-          desc={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim,
-            labore ab cupiditate sit mollitia culpa et, in illum voluptates
-            voluptatum molestiae accusantium nostrum! Consectetur vero incidunt
-            ratione autem vitae facere impedit, fugiat esse cumque! Delectus
-            aperiam quis autem minima voluptate, blanditiis tempora expedita
-            excepturi dolores maiores. Repellat quos ipsam beatae.`}
-          file={"File URL Here"}
-          onClick={() => setSelectedAssignment(false)} 
-          assignmentTitle={"First Assignment"}        />
+          key={assignmentContent?.assignment_id}
+          assignmentData={assignmentContent!}
+          onClick={() => setTogleAssignmentContent(false)}
+        />
       ) : (
-        <div className="font-inter">
-          <div className="h-20 py-3 px-6">
-            <p className="text-4xl mb-2">Assignments</p>
-            <div className="h-[0.1px] bg-[#B2A9A9]"></div>
-          </div>
+        <>
+          {isLoadingAssignments ? (
+            <div className="h-screen flex justify-center items-center">
+              <LoadingSpinner size="lg"/>
+            </div>
+          ) : (
+            <div className="font-inter">
+              <div className="h-20 py-3 px-6">
+                <p className="text-4xl mb-2">Assignments</p>
+                <div className="h-[0.1px] bg-[#B2A9A9]"></div>
+              </div>
 
-          <div onClick={() => setSelectedAssignment(true)} className="px-6">
-            {assignments.map((assignment) => (
-              <AssignmentsCard
-                className={assignment.assignment_name}
-                dueDate={assignment.due_date}
-              />
-            ))}
-          </div>
-        </div>
+              <div
+                onClick={() => setTogleAssignmentContent(true)}
+                className="px-6"
+              >
+                {assignments.map((assignment) => (
+                  <div
+                    onClick={() =>
+                      setSelectedAssignment(assignment.assignment_id)
+                    }
+                  >
+                    <AssignmentsCard
+                      className={assignment.assignment_name}
+                      dueDate={assignment.due_date}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </>
   );

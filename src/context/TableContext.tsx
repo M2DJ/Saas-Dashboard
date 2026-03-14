@@ -42,7 +42,7 @@ type TableContextType = {
     nameOfClass: string,
   ) => Promise<TableResult>;
   deleteAssignmentAfterDueDate: (assignmentId: string) => Promise<TableResult>;
-  loadAssignments: (classId: string) => Promise<TableResult>;
+  loadAssignments: () => Promise<TableResult>;
   loadAssignmentContents: (assignmentId: string) => Promise<TableResult>;
 };
 
@@ -479,11 +479,10 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true };
   };
 
-  const loadAssignments = async (classId: string) => {
+  const loadAssignments = async () => {
     const { data, error } = await supabase
       .from("ClassAssignments")
-      .select("*")
-      .eq("class_id", classId);
+      .select("*");
 
     if (error) {
       console.error("Error while fetching assignment list: ", error);
