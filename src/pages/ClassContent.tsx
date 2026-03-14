@@ -107,6 +107,8 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
       );
       if (!result.success) {
         console.error(result.error);
+      } else {
+        window.location.reload();
       }
     } catch (e) {
       console.error(e);
@@ -130,6 +132,8 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
 
       if (!result.success) {
         console.error(result.error);
+      } else {
+        window.location.reload();
       }
     } catch (e) {
       console.error(e);

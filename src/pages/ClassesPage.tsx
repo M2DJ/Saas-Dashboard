@@ -49,8 +49,7 @@ const ClassesPage = () => {
     getThoseClasses();
   }, []);
 
-  const submitCreateClass = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const submitCreateClass = async () => {
     try {
       const result = await addClass(createClassName);
 
@@ -66,8 +65,7 @@ const ClassesPage = () => {
     }
   };
 
-  const submitJoinClass = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const submitJoinClass = async () => {
     try {
       const result = await joinClass(joinClassId);
 
