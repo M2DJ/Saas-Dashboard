@@ -221,13 +221,15 @@ const ClassesPage = () => {
             </div>
           ) : classError ? (
             <div className="h-[85vh] flex flex-col justify-center items-center">
-              <p className="text-3xl text-red-500">There was an error getting your classes</p>
+              <p className="text-3xl text-red-500">
+                There was an error getting your classes
+              </p>
               <p className="text-xl">Try agian momentarily</p>
             </div>
           ) : (
             <div
               onClick={() => setClassSwitcher(true)}
-              className="px-6 grid grid-cols-3"
+              className="px-6 grid gap-x-3 gap-y-3 grid-cols-[repeat(2,_1fr)] md:grid-cols-[repeat(3,_1fr)] lg:grid-cols-[repeat(4,_1fr)]"
             >
               {classes.map((classItem) => (
                 <div onClick={() => setSelectedClass(classItem.class_id)}>
