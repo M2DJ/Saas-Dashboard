@@ -32,7 +32,6 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
   const [isClosing, setIsClosing] = useState(false);
   //Opening and closing the files
   const [isOpeningFile, setIsOpeningFile] = useState(false);
-  const [isClosingFile, setIsClosingFile] = useState(false);
 
   //Adding a lecture or assignment state
   const [addFiles, setAddFiles] = useState("");
@@ -78,7 +77,23 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
 
     getThoseLectures();
   }, []);
-  
+
+  //Opening animation of the pop up window
+  const handleOpenAnimation = () => {
+    setOpenPopUp(true);
+    setIsOpening(true);
+    setTimeout(() => setIsOpening(false), 50);
+  };
+  //Closing animation of the pop up window
+  const handleCloseAnimation = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setOpenPopUp(false);
+      setIsClosing(false);
+      setAddFiles("");
+    }, 500);
+  };
+
   //Submitting the assignments and lectures
   const submitLecture = async () => {
     try {
@@ -128,11 +143,15 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
       {openPopUp && (
         <>
           <div
-            onClick={() => setOpenPopUp(false)}
-            className="fixed inset-0 bg-black opacity-50 z-3"
+            onClick={handleCloseAnimation}
+            className={`fixed inset-0 bg-black z-3 transition-opacity duration-300 ${
+              isOpening || isClosing ? "opacity-0" : "opacity-50"
+            }`}
           ></div>
           {addFiles === "" ? (
-            <div className="bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4">
+            <div
+              className={`bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4 transition-all duration-200 ${isOpening || isClosing ? "scale-95 opacity-0" : "scale-100"}`}
+            >
               <div className="h-80 flex flex-col justify-center items-center">
                 <button
                   onClick={() => setAddFiles("lecture")}
@@ -150,7 +169,9 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
               </div>
             </div>
           ) : (
-            <div className="bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4 overflow-y-hidden">
+            <div
+              className={`bg-white w-150 h-90 p-4 shadow-[0px_0px_12px_rgba(0,0,0,0.6)] rounded-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-4 overflow-y-hidden transition-all duration-200 ${isOpening || isClosing ? "scale-95 opacity-0" : "scale-100"}`}
+            >
               {addFiles === "lecture" ? (
                 <div className="">
                   <button onClick={() => setAddFiles("")}>
@@ -301,8 +322,8 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
               <img src={Book_Logo} className="mb-2" />
               <p className="text-3xl mb-2">Add Files, Videos or Assignments</p>
               <button
-                onClick={() => setOpenPopUp(true)}
-                className="rounded-lg text-white text-xl bg-[#5B92FF] p-2 shadow-[0px_2px_10px_rgba(0,0,0,0.4)]"
+                onClick={handleOpenAnimation}
+                className={`rounded-lg text-white text-xl bg-[#5B92FF] p-2 shadow-[0px_2px_10px_rgba(0,0,0,0.4)]`}
               >
                 Upload File
               </button>
@@ -313,7 +334,9 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
             <div className="p-4 bg-[#EAF1FF] rounded-xl flex flex-col justify-start">
               <p className="text-2xl mb-2">Latest Files</p>
               <div>
-                <p className="text-4xl">{lectures[lectures.length - 1]?.lecture_name}</p>
+                <p className="text-4xl">
+                  {lectures[lectures.length - 1]?.lecture_name}
+                </p>
               </div>
             </div>
           </div>
@@ -383,16 +406,24 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
             <>
               {lectureContent && (
                 <>
-                  <div
-                    className="fixed inset-0 bg-black opacity-50 z-4"
-                    onClick={() => setIsOpeningFile(false)}
-                  ></div>
-                  <div className="w-200 h-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5">
-                    <iframe
-                      src={`${lectureContent}#toolbar=0&navpanes=0`}
-                      className="w-full h-full"
-                    />
-                  </div>
+                  {isLoadingUploadedFiles ? (
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5">
+                      <LoadingSpinner size="lg" />
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        className="fixed inset-0 bg-black opacity-50 z-4"
+                        onClick={() => setIsOpeningFile(false)}
+                      ></div>
+                      <div className="w-200 h-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5">
+                        <iframe
+                          src={`${lectureContent}#toolbar=0&navpanes=0`}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </>
