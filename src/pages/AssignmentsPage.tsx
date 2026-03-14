@@ -1,11 +1,12 @@
 import { useState } from "react";
 import AssignmentsCard from "../components/AssignmentsCard";
 import AssignmentContent from "./AssignmentContent";
+import type { AssignmentType } from "../types/Types";
 
 const AssignmentsPage = () => {
   const [selectedAssignment, setSelectedAssignment] = useState(false);
-
-  const assignments = [{ className: "Python", dueDate: new Date() }];
+  const [assignments, setAssignments] = useState<AssignmentType[]>([]);
+  
 
   return (
     <>

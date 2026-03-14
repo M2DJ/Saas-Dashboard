@@ -8,7 +8,8 @@ export type ClassesType = {
 };
 
 export type AssignmentType = {
-  assignmentName: string;
-  assignmentDesc: string;
-  dueDate: string | Date;
+  assignment_id: string;
+  assignment_name: string;
+  assignment_desc: string;
+  due_date: string | Date;
 }
