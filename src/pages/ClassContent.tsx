@@ -8,16 +8,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { tableInserterAndRemover } from "../context/TableContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 type LecturesList = {
   leacture_id: string;
   lecture_name: string;
   created_at: string;
 };
-
-// type LectureContentLink = {
-//   lecture_file_URL: string;
-// }
 
 type ClassContentProps = {
   onClick: () => void;
@@ -28,10 +25,14 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
   //The lectures list state
   const [lectures, setLectures] = useState<LecturesList[]>([]);
   const [lectureContent, setLectureContent] = useState<string | null>(null);
+
   //Opening and closing pop up state
   const [openPopUp, setOpenPopUp] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  //Opening and closing the files
+  const [isOpeningFile, setIsOpeningFile] = useState(false);
+  const [isClosingFile, setIsClosingFile] = useState(false);
 
   //Adding a lecture or assignment state
   const [addFiles, setAddFiles] = useState("");
@@ -60,6 +61,7 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
   useEffect(() => {
     const getThoseLectures = async () => {
       try {
+        setIsLoadingLectures(true);
         const result = await loadLectures(classData.class_id);
 
         if (!result.success) {
@@ -69,6 +71,8 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
         setLectures(result.data);
       } catch (e) {
         console.error(e);
+      } finally {
+        setIsLoadingLectures(false);
       }
     };
 
@@ -314,14 +318,7 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
         )}
 
         <div className="px-6">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex">
-              <p className="text-[26px] mr-2">All Files</p>
-              <select className="text-[26px] border-[#B2A9A9] border-2 rounded-lg focus:outline-none">
-                <option>File Type</option>
-              </select>
-            </div>
-
+          <div className="flex justify-end items-center mb-2">
             <div className="relative">
               <input
                 type="text"
@@ -341,46 +338,62 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
           </div>
           <div className="h-[0.1px] bg-black mb-3"></div>
 
-          <div className="overflow-y-auto h-54">
-            {lectures.map((lecture, index) => (
-              <div
-                key={lecture.leacture_id}
-                onClick={async () => {
-                  try {
-                    const results = await loadLecturesContent(
-                      lecture.leacture_id,
-                    );
-                    if (!results.success) console.error(results.error);
-
-                    setLectureContent(results.data);
-                    console.log(lectureContent);
-                  } catch (e) {
-                    console.error(e);
-                  }
-                }}
-              >
-                <div className="flex justify-between items-center">
-                  <p className="ml-1">{lecture.lecture_name}</p>
-
-                  <div className="flex items-center mr-15">
-                    <p className="mr-2">
-                      {lecture.created_at.substring(0, 10)}
-                    </p>
-                  </div>
-                </div>
-                {index !== lectures.length - 1 && (
-                  <div className="h-[0.1px] bg-[#B2A9A9] my-3"></div>
-                )}
-              </div>
-            ))}
-          </div>
-          {lectureContent && (
-            <div className="w-full h-screen">
-              <embed
-                src={`${lectureContent}#toolbar=0&navpanes=0`}
-                className="w-full h-full border"
-              />
+          {isLoadingLectures ? (
+            <div className="flex justify-center mt-6">
+              <LoadingSpinner />
             </div>
+          ) : (
+            <div className="overflow-y-auto h-54">
+              {lectures.map((lecture, index) => (
+                <div
+                  key={lecture.leacture_id}
+                  onClick={async () => {
+                    try {
+                      const results = await loadLecturesContent(
+                        lecture.leacture_id,
+                      );
+                      if (!results.success) console.error(results.error);
+
+                      setLectureContent(results.data);
+                      setIsOpeningFile(true);
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                >
+                  <div className="flex justify-between items-center">
+                    <p className="ml-1">{lecture.lecture_name}</p>
+
+                    <div className="flex items-center mr-15">
+                      <p className="mr-2">
+                        {lecture.created_at.substring(0, 10)}
+                      </p>
+                    </div>
+                  </div>
+                  {index !== lectures.length - 1 && (
+                    <div className="h-[0.1px] bg-[#B2A9A9] my-3"></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {isOpeningFile && (
+            <>
+              {lectureContent && (
+                <>
+                  <div
+                    className="fixed inset-0 bg-black opacity-50 z-4"
+                    onClick={() => setIsOpeningFile(false)}
+                  ></div>
+                  <div className="w-200 h-screen absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5">
+                    <iframe
+                      src={`${lectureContent}#toolbar=0&navpanes=0`}
+                      className="w-full h-full"
+                    />
+                  </div>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>
