@@ -8,7 +8,7 @@ type AssignmentCardProps = {
 const AssignmentsCard = ({ className, dueDate }: AssignmentCardProps) => {
   const clipClassName = (nameOfClass: string) => {
     if (nameOfClass.includes(" ")) {
-      return nameOfClass.split(" ")[1].charAt(0);
+      return nameOfClass.split(" ")[0].charAt(0);
     }
     return nameOfClass.charAt(0);
   };

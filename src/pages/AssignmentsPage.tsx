@@ -70,7 +70,7 @@ const AssignmentsPage = () => {
                     }
                   >
                     <AssignmentsCard
-                      className={assignment.assignment_name}
+                      className={assignment.class_name}
                       dueDate={assignment.due_date}
                     />
                   </div>
