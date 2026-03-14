@@ -13,7 +13,7 @@ const AssignmentsPage = () => {
   const [assignments, setAssignments] = useState<AssignmentType[]>([]);
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
 
-  const { loadAssignments } = tableInserterAndRemover();
+  const { loadAssignments, deleteExpiredAssignments } = tableInserterAndRemover();
 
   useEffect(() => {
     const getThoseAssignments = async () => {
@@ -33,6 +33,18 @@ const AssignmentsPage = () => {
 
     getThoseAssignments();
   }, []);
+
+  useEffect(() => {
+    const deleteThoseAssignments = async() => {
+      const results = await deleteExpiredAssignments();
+
+      if(!results.success){
+        console.log(results.error);
+      }
+    }
+
+    deleteThoseAssignments();
+  },[])
 
   const assignmentContent = assignments.find(
     (a) => a.assignment_id === selectedAssignment,

@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { supabase } from "../services/Supabase";
 import type { ClassesType } from "../types/Types";
 
@@ -39,7 +34,7 @@ type TableContextType = {
     classId: string,
     nameOfClass: string,
   ) => Promise<TableResult>;
-  deleteAssignmentAfterDueDate: (assignmentId: string) => Promise<TableResult>;
+  deleteExpiredAssignments: () => Promise<TableResult>
   loadAssignments: () => Promise<TableResult>;
   loadAssignmentContents: (assignmentId: string) => Promise<TableResult>;
 };
@@ -48,7 +43,6 @@ const TableContext = createContext<TableContextType | undefined>(undefined);
 
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   const [classes, setClassses] = useState<ClassesType[]>([]);
-
 
   const addClass = async (nameOfClass: string) => {
     const {
@@ -438,47 +432,17 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true };
   };
 
-  const deleteAssignmentAfterDueDate = async (assignmentId: string) => {
-    //First delete the row from the table "ClassAssignments"
-    const { data, error } = await supabase
+  const deleteExpiredAssignments = async () => {
+    const now = new Date().toISOString();
+
+    const { error } = await supabase
       .from("ClassAssignments")
-      .select("*")
-      .eq("assignment_id", assignmentId)
-      .single();
+      .delete()
+      .lte("due_date", now)
 
     if (error) {
-      console.error("Error occured while fetching the assignment", error);
+      console.error("Error deleting expired assignments:", error);
       return { success: false, error };
-    }
-
-    if (new Date(data?.due_date).getTime() === new Date().getTime()) {
-      const { error: assignmentDeleteFromTableError } = await supabase
-        .from("ClassAssignments")
-        .delete()
-        .eq("assignemnt_id", assignmentId);
-      if (assignmentDeleteFromTableError) {
-        console.error(
-          "Error deleting assignment from table",
-          assignmentDeleteFromTableError,
-        );
-        return { success: false, assignmentDeleteFromTableError };
-      }
-
-      const { data: fileURL, error: fileURLError } = await supabase
-        .from("ClassAssignmentFiles")
-        .select("assignment_file_URL")
-        .eq("assignment_id", assignmentId);
-      if (fileURLError) return { success: false, fileURLError };
-
-      const filePaths = fileURL?.map((item) => {
-        const file = item.assignment_file_URL;
-        return file.split("/storage/v1/object/public/ClassAssignments/")[1];
-      });
-
-      const { error: deleteFileError } = await supabase.storage
-        .from("ClassAssignments")
-        .remove(filePaths);
-      if (deleteFileError) return { success: false, deleteFileError };
     }
 
     return { success: true };
@@ -518,7 +482,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
         loadLecturesContent,
         uploadAssignment,
         uploadAssignmentSolution,
-        deleteAssignmentAfterDueDate,
+        deleteExpiredAssignments,
         loadAssignments,
         loadAssignmentContents,
       }}
