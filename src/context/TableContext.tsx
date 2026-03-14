@@ -322,6 +322,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
             class_id: classId,
             assignment_desc: assignemntDesc,
             due_date: dueDate,
+            class_name: nameOfClass,
           },
         ])
         .select()

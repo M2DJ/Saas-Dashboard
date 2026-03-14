@@ -12,4 +12,5 @@ export type AssignmentType = {
   assignment_name: string;
   assignment_desc: string;
   due_date: string | Date;
+  class_name: string;
 }

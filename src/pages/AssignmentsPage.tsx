@@ -32,8 +32,8 @@ const AssignmentsPage = () => {
           <div onClick={() => setSelectedAssignment(true)} className="px-6">
             {assignments.map((assignment) => (
               <AssignmentsCard
-                className={assignment.className}
-                dueDate={assignment.dueDate}
+                className={assignment.assignment_name}
+                dueDate={assignment.due_date}
               />
             ))}
           </div>

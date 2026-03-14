@@ -2,7 +2,7 @@ import { format } from "date-fns";
 
 type AssignmentCardProps = {
   className: string;
-  dueDate: Date;
+  dueDate: string | Date;
 };
 
 const AssignmentsCard = ({ className, dueDate }: AssignmentCardProps) => {

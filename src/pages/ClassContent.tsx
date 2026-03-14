@@ -102,7 +102,7 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
   };
 
   const submitAssignment = async (e: React.FormEvent) => {
-    // e.preventDefault();
+    e.preventDefault();
     try {
       setIsLoadingUploadedFiles(true);
 
