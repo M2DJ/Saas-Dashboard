@@ -78,9 +78,10 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
 
     getThoseLectures();
   }, []);
+  
   //Submitting the assignments and lectures
   const submitLecture = async (e: React.FormEvent) => {
-    e.preventDefault();
+    // e.preventDefault();
     try {
       setIsLoadingUploadedFiles(true);
 
@@ -100,7 +101,8 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
     }
   };
 
-  const submitAssignment = async () => {
+  const submitAssignment = async (e: React.FormEvent) => {
+    // e.preventDefault();
     try {
       setIsLoadingUploadedFiles(true);
 

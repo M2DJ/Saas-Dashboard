@@ -8,7 +8,6 @@ import {
 import { supabase } from "../services/Supabase";
 import { UserAuth } from "./AuthContext";
 import type { ClassesType } from "../types/Types";
-import { data } from "react-router-dom";
 
 type TableResult = {
   success: boolean;
@@ -346,7 +345,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
     const fileCount = numOfFiles.length || 0;
     
-    const fileExt = addedAssignment.name.split('.').pop(); 
+    const fileExt = assignment.name.split('.').pop(); 
     const fileName = `Assignment_${fileCount + 1}.${fileExt}`;
     const fullPath = `${nameOfClass}/${fileName}`;
 
@@ -364,8 +363,8 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
     //Third: Add the file URL to the "ClassAssignmentFiles" table
     const { data: assignmentFileURL } = await supabase.storage
-      .from("ClassAssignment")
-      .getPublicUrl(`${nameOfClass}/Assignment_${fileCount + 1}`);
+      .from("ClassAssignments")
+      .getPublicUrl(fullPath);
 
     const { error } = await supabase
       .from("ClassAssignmentFiles")
