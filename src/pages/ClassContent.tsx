@@ -80,8 +80,7 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
   }, []);
   
   //Submitting the assignments and lectures
-  const submitLecture = async (e: React.FormEvent) => {
-    // e.preventDefault();
+  const submitLecture = async () => {
     try {
       setIsLoadingUploadedFiles(true);
 
@@ -101,8 +100,7 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
     }
   };
 
-  const submitAssignment = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitAssignment = async () => {
     try {
       setIsLoadingUploadedFiles(true);
 
@@ -312,9 +310,11 @@ const ClassContent = ({ onClick, classData }: ClassContentProps) => {
           </div>
         ) : (
           <div className="px-6 mb-2">
-            <div className="h-60 bg-[#EAF1FF] rounded-xl flex flex-col justify-center items-center">
-              <img src={Book_Logo} className="mb-2" />
-              <p className="text-3xl mb-2">Latest Files</p>
+            <div className="p-4 bg-[#EAF1FF] rounded-xl flex flex-col justify-start">
+              <p className="text-2xl mb-2">Latest Files</p>
+              <div>
+                <p className="text-4xl">{lectures[lectures.length - 1]?.lecture_name}</p>
+              </div>
             </div>
           </div>
         )}
