@@ -1,12 +1,10 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useState,
   type ReactNode,
 } from "react";
 import { supabase } from "../services/Supabase";
-import { UserAuth } from "./AuthContext";
 import type { ClassesType } from "../types/Types";
 
 type TableResult = {
