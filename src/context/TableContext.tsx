@@ -51,11 +51,6 @@ const TableContext = createContext<TableContextType | undefined>(undefined);
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   const [classes, setClassses] = useState<ClassesType[]>([]);
 
-  const { session } = UserAuth();
-
-  useEffect(() => {
-    console.log("session changed");
-  }, [session]);
 
   const addClass = async (nameOfClass: string) => {
     const {
@@ -240,7 +235,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     const fileCount = existingFiles.length || 0;
 
     //Extract the file extention
-    const fileExt = lecture.name.split('.').pop(); 
+    const fileExt = lecture.name.split(".").pop();
     const fileName = `Lecture_${fileCount + 1}.${fileExt}`;
     const fullPath = `${nameOfClass}/${fileName}`;
 
@@ -345,8 +340,8 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const fileCount = numOfFiles.length || 0;
-    
-    const fileExt = assignment.name.split('.').pop(); 
+
+    const fileExt = assignment.name.split(".").pop();
     const fileName = `Assignment_${fileCount + 1}.${fileExt}`;
     const fullPath = `${nameOfClass}/${fileName}`;
 
@@ -389,7 +384,17 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     classId: string,
     nameOfClass: string,
   ) => {
-    //First: Get the assignment id that is related to the class that has the assignment
+    //First: get the user session(the current user)
+    const {
+      data: { session: currentSession },
+    } = await supabase.auth.getSession();
+
+    if (!currentSession?.user?.id) {
+      console.error("User not authenticated");
+      return { success: false, error: "User not authenticated" };
+    }
+
+    //Second: Get the assignment id that is related to the class that has the assignment
     const { data, error: assignmentIdError } = await supabase
       .from("ClassAssignments")
       .select("assignment_id")
@@ -401,10 +406,10 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const assignmentId = data?.assignment_id;
-    
-    const solutionPath = `${nameOfClass}_solutions/${session?.user.id}`;
-    
-    //Second: Upload the solution file to the path "class name_solution/user id"
+
+    const solutionPath = `${nameOfClass}_solutions/${currentSession?.user.id}`;
+
+    //Third: Upload the solution file to the path "class name_solution/user id"
     const { error: uploadedSolutionError } = await supabase.storage
       .from("ClassAssignments")
       .upload(solutionPath, assignmentSol);
@@ -413,9 +418,9 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       return { success: false, uploadedSolutionError };
     }
 
-    //Third: Upload the solution file URL to the "ClassAssignmentsFiles" table
+    //Fourth: Upload the solution file URL to the "ClassAssignmentsFiles" table
     const { data: publicURL } = await supabase.storage
-      .from("ClassAssignment")
+      .from("ClassAssignments")
       .getPublicUrl(solutionPath);
 
     const { error } = await supabase
@@ -482,9 +487,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const loadAssignments = async () => {
-    const { data, error } = await supabase
-      .from("ClassAssignments")
-      .select("*");
+    const { data, error } = await supabase.from("ClassAssignments").select("*");
 
     if (error) {
       console.error("Error while fetching assignment list: ", error);
@@ -495,14 +498,12 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const loadAssignmentContents = async (assignmentId: string) => {
-    const { data, error } =
-      await supabase
-        .from("ClassAssignmentFiles")
-        .select("assignment_file_URL")
-        .eq("assignment_id", assignmentId)
-        .single();
-    if (error)
-      return { success: false, error };
+    const { data, error } = await supabase
+      .from("ClassAssignmentFiles")
+      .select("assignment_file_URL")
+      .eq("assignment_id", assignmentId)
+      .single();
+    if (error) return { success: false, error };
 
     return { success: true, data: data.assignment_file_URL };
   };

@@ -3,6 +3,7 @@ import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import type { AssignmentType } from "../types/Types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
+import { tableInserterAndRemover } from "../context/TableContext";
 
 type AssignmentProps = {
   assignmentData: AssignmentType;
@@ -14,9 +15,26 @@ const AssignmentContent = ({ assignmentData, onClick }: AssignmentProps) => {
     File | undefined
   >();
 
+  const { uploadAssignmentSolution } = tableInserterAndRemover();
+
   const uploadedAssignmentRef = useRef<HTMLInputElement>(null);
 
-  const submitAssignmentSolution = async () => {};
+  const submitAssignmentSolution = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const results = await uploadAssignmentSolution(
+        uploadedAssignmentFile!,
+        assignmentData.class_id,
+        assignmentData.class_name,
+      );
+
+      if (!results.success) {
+        console.error(results.error);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className="font-inter">
@@ -50,8 +68,12 @@ const AssignmentContent = ({ assignmentData, onClick }: AssignmentProps) => {
 
           <form onSubmit={submitAssignmentSolution}>
             <button
-              type={uploadedAssignmentFile != undefined ? "submit" : "button"}
-              onClick={() => uploadedAssignmentRef.current?.click()}
+              type={uploadedAssignmentFile == undefined ? "button" : "submit"}
+              onClick={
+                uploadedAssignmentFile == undefined
+                  ? () => uploadedAssignmentRef.current?.click()
+                  : undefined
+              }
               className="rounded-md py-2 px-1 text-lg text-white bg-[#5B92FF] shadow-[0px_2px_10px_rgba(0,0,0,0.4)]"
             >
               {uploadedAssignmentFile != undefined
