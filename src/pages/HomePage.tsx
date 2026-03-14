@@ -3,6 +3,7 @@ import img1 from "../assets/images/unsplash_oXlXu2qukGE.jpg";
 import Github from "../assets/images/Github_Logo.jpg";
 import Linkedin from "../assets/images/Linkedin_Logo.jpg";
 import Dashboard from "../assets/images/Dashboard main page.png";
+import Video from "../assets/videos/Screen Recording 2026-03-14 234032.mp4";
 import { Link } from "react-router-dom";
 
 function HomePage() {
@@ -60,7 +61,9 @@ function HomePage() {
             </p>
           </div>
           {/* Here is where you add a small video of the dashboard */}
-          <div></div>
+          <div className="mt-6">
+            <video autoPlay muted src={Video} className="rounded-lg"/>
+          </div>
         </div>
         {/* Footer */}
         <footer className="h-30">
