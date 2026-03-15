@@ -141,9 +141,6 @@ const LoginPage = () => {
             {loginError && <p className="text-red-500">{loginError}</p>}
           </div>
         </form>
-
-        <p className="text-center mt-2">or login with</p>
-        {/* Add other sign in methods here */}
       </div>
     </div>
   );

@@ -131,9 +131,6 @@ const SignUpPage = () => {
             {error.length > 1 && <p className="text-red-500">{error}</p>}
           </div>
         </form>
-
-        <p className="text-center mt-2">or sign up with</p>
-        {/* Add other sign in methods here */}
       </div>
 
       <div
