@@ -14,4 +14,5 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  base: '/Saas-Dashboard/'
 })
