@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import type { AssignmentType } from "../types/Types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,13 +11,28 @@ type AssignmentProps = {
 };
 
 const AssignmentContent = ({ assignmentData, onClick }: AssignmentProps) => {
+  const [assingmentFile, setAssignmentFile] = useState<string | undefined>();
   const [uploadedAssignmentFile, setUploadedAssignmentFile] = useState<
     File | undefined
   >();
 
-  const { uploadAssignmentSolution } = tableInserterAndRemover();
+  const { uploadAssignmentSolution, loadAssignmentContents } =
+    tableInserterAndRemover();
 
   const uploadedAssignmentRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const loadFile = async() => {
+      const results = await loadAssignmentContents(assignmentData.assignment_id);
+      if(results.success){
+        setAssignmentFile(results.data);
+      } else {
+        console.error(results.error);
+      }
+    }
+
+    loadFile();
+  }, []);
 
   const submitAssignmentSolution = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +71,21 @@ const AssignmentContent = ({ assignmentData, onClick }: AssignmentProps) => {
           </p>
 
           <p className="mb-12">{assignmentData.assignment_desc}</p>
+
+          {assingmentFile && (
+            <div className="mb-7 p-4 bg-[#EAF1FF] rounded-lg">
+            <p className="text-lg font-semibold mb-2">Assignment File:</p>
+            <a
+              href={assingmentFile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#5B92FF] underline flex items-center"
+            >
+              <FontAwesomeIcon icon={faFile} className="mr-2" />
+              View Assignment File
+            </a>
+          </div>
+          )}
 
           <div className="mb-7">
             {uploadedAssignmentFile != undefined && (
