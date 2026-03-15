@@ -80,6 +80,7 @@ const AssignmentsPage = () => {
                     onClick={() =>
                       setSelectedAssignment(assignment.assignment_id)
                     }
+                    className="mb-4"
                   >
                     <AssignmentsCard
                       className={assignment.class_name}
