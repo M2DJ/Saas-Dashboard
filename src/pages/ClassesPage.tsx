@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ClassesCard from "../components/ClassesCard";
 import Arrow_Back from "../assets/images/Arrow_Back.webp";
 import ClassContent from "./ClassContent";
